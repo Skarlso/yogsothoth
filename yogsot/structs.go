@@ -2,11 +2,12 @@ package yogsot
 
 // Stack represents a collection of DigitalOcean assests.
 type Stack struct {
+	Name string
 }
 
 // CreateStackRequest create stack request.
 type CreateStackRequest struct {
-	TemplateBody string
+	TemplateBody []byte
 	StackName    string
 }
 
@@ -30,5 +31,18 @@ type DescribeStackRequest struct {
 type DescribeStackResponse struct {
 }
 
+type Parameter struct {
+	Default     string `yaml:"Default"`
+	Type        string `yaml:"Type"`
+	Description string `yaml:"Description"`
+}
+
+type Resource struct {
+	Name string `yaml:"Name"`
+	Type string `yaml:"Type"`
+}
+
 type createStackInput struct {
+	Parameters map[string]Parameter `yaml:"Parameters"`
+	Resources  map[string]Resource  `yaml:"Resources"`
 }
