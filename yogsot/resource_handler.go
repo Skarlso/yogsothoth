@@ -1,0 +1,41 @@
+package yogsot
+
+import (
+	"reflect"
+
+	"github.com/digitalocean/godo"
+)
+
+func getDropletRequest(stackname string, resource map[string]interface{}) *godo.DropletCreateRequest {
+	req := &godo.DropletCreateRequest{}
+	for k, v := range resource {
+		if k == "Type" {
+			continue
+		}
+		if k == "Image" {
+			req.Image = godo.DropletCreateImage{
+				Slug: v.(map[interface{}]interface{})["Slug"].(string),
+			}
+			continue
+		}
+		if k == "SSHKeys" {
+			fingerprints := v.([]interface{})
+			keys := []godo.DropletCreateSSHKey{}
+			id := 0
+			for _, fingerprint := range fingerprints {
+				keys = append(keys, godo.DropletCreateSSHKey{
+					ID:          id,
+					Fingerprint: fingerprint.(map[interface{}]interface{})["Fingerprint"].(string),
+				})
+				id++
+			}
+			req.SSHKeys = keys
+			continue
+		}
+		ref := reflect.ValueOf(req)
+		val := reflect.Indirect(ref).FieldByName(k)
+		val.Set(reflect.ValueOf(v))
+	}
+	req.Tags = []string{stackname}
+	return req
+}

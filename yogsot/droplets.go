@@ -7,6 +7,6 @@ type Droplet struct {
 	*godo.Droplet
 }
 
-func (d *Droplet) createDroplet() {
+func (d *Droplet) createDroplet(request *godo.DropletCreateRequest) {
 
 }

@@ -11,13 +11,6 @@ func TestParser(t *testing.T) {
 		t.Fatal("failed with error: ", err)
 	}
 	response, err := parseTemplate(content)
-
-	for _, v := range response.Resources {
-		if v["Type"] == "Droplet" {
-			d := Droplet{}
-
-		}
-	}
 	if err != nil {
 		t.Fatal("failed with error: ", err)
 	}

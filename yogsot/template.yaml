@@ -14,3 +14,8 @@ Resources:
     Name: MyDroplet
     # Type of the resource which will be used to determine what to parse it as
     Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+    SSHKeys:
+      - Fingerprint: "Fingerprint1"
+      - Fingerprint: "Fingerprint2"
