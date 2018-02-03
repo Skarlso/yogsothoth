@@ -31,18 +31,19 @@ type DescribeStackRequest struct {
 type DescribeStackResponse struct {
 }
 
+// Parameter are the variables of the stack.
 type Parameter struct {
 	Default     string `yaml:"Default"`
 	Type        string `yaml:"Type"`
 	Description string `yaml:"Description"`
 }
 
-type Resource struct {
-	Name string `yaml:"Name"`
-	Type string `yaml:"Type"`
-}
+// // Resource is parsed as a map[string][interface{}] so that it can be
+// // determined what kind of resource it is and parse it further accordingly.
+// type Resource struct {
+// }
 
 type createStackInput struct {
-	Parameters map[string]Parameter `yaml:"Parameters"`
-	Resources  map[string]Resource  `yaml:"Resources"`
+	Parameters map[string]Parameter              `yaml:"Parameters"`
+	Resources  map[string]map[string]interface{} `yaml:"Resources"`
 }

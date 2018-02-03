@@ -9,6 +9,8 @@ Parameters:
     Default: 80
 
 Resources:
+  # The name of the resource
   Droplet:
     Name: MyDroplet
+    # Type of the resource which will be used to determine what to parse it as
     Type: Droplet

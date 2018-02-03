@@ -2,19 +2,18 @@ package yogsot
 
 import (
 	"errors"
-	"fmt"
 )
 
 // CreateStack creates group of resources and logically bundles them together.
 func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse, error) {
-	req, err := parseTemplate(request.TemplateBody)
+	_, err := parseTemplate(request.TemplateBody)
 	if err != nil {
 		return CreateStackResponse{}, errors.New("error while parsing tempalte: " + err.Error())
 	}
-	for _, v := range req.Resources {
-		fmt.Println("Received the following resources:")
-		fmt.Printf("Name: %s, Type: %s\n", v.Name, v.Type)
-	}
+	// for _, v := range req.Resources {
+	// 	fmt.Println("Received the following resources:")
+	// 	// fmt.Printf("Name: %s, Type: %s\n", v.Name, v.Type)
+	// }
 	return CreateStackResponse{}, nil
 }
 
