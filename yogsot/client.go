@@ -12,6 +12,7 @@ type Token struct {
 }
 
 // YogClient is a client struct for Yogsothoth.
+// TODO: Make an interface out of this, so I can mock it out in tests.
 type YogClient struct {
 	*godo.Client
 }
@@ -26,6 +27,10 @@ func (t *Token) Token() (*oauth2.Token, error) {
 
 // NewClient produces a client for Yogsothoth.
 func NewClient(token string) *YogClient {
+	// TODO: Ugly hack until I create an interface for this.
+	if token == "testToken" {
+		return &YogClient{nil}
+	}
 	oauthClient := oauth2.NewClient(context.Background(), &Token{AccessToken: token})
 	yogClient := YogClient{godo.NewClient(oauthClient)}
 	return &yogClient

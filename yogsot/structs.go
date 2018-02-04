@@ -13,8 +13,9 @@ type CreateStackRequest struct {
 
 // CreateStackResponse create stack response.
 type CreateStackResponse struct {
-	Name  string
-	Error error
+	Name      string
+	Error     error
+	Resources []Resource
 }
 
 // DeleteStackRequest delete stack request.

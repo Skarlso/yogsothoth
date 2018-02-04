@@ -2,7 +2,6 @@ package yogsot
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 
 	"github.com/digitalocean/godo"
@@ -10,6 +9,7 @@ import (
 
 // Droplet is a struct that builds a droplet request.
 type Droplet struct {
+	Response *godo.Response
 }
 
 func (d Droplet) buildRequest(stackname string, resource map[string]interface{}) (*godo.DropletCreateRequest, error) {
@@ -51,11 +51,10 @@ func (d Droplet) buildRequest(stackname string, resource map[string]interface{})
 }
 
 func (d Droplet) build(stackname string, resource map[string]interface{}) error {
-	req, err := d.buildRequest(stackname, resource)
+	_, err := d.buildRequest(stackname, resource)
 	if err != nil {
 		return err
 	}
-	fmt.Println(req)
 	// build droplet with client here
 	return nil
 }

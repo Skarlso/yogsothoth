@@ -28,7 +28,7 @@ Resources:
 	}
 	for _, v := range response.Resources {
 		if v["Type"] == "Droplet" {
-			d := buildResource("Droplet")
+			d, _ := buildResource("Droplet")
 			req, err := d.(Droplet).buildRequest("TestStack", v)
 			if err != nil {
 				t.Fatal("expected error to be nil. was: ", err)
@@ -65,11 +65,18 @@ Resources:
 	}
 	for k, v := range response.Resources {
 		if v["Type"] == "Droplet" {
-			d := buildResource("Droplet")
+			d, _ := buildResource("Droplet")
 			_, err := d.(Droplet).buildRequest("TestStack", v)
 			if err == nil && k == "Asdf" {
 				t.Fatal("expected error to be not nil")
 			}
 		}
+	}
+}
+
+func TestUnknownResourceType(t *testing.T) {
+	_, err := buildResource("No")
+	if err == nil {
+		t.Fatal("should have failed with unknown resource type")
 	}
 }
