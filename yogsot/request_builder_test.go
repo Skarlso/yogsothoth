@@ -57,20 +57,20 @@ Parameters:
 
 Resources:
   Droplet:
-    Asdf: Bla
     Name: MyDroplet
     Type: Droplet
+    Asdf: Bla
     Image:
       Slug: "ubuntu-14-04-x64"`)
 	response, err := parseTemplate(template)
 	if err != nil {
 		t.Fatal("failed with error: ", err)
 	}
-	for _, v := range response.Resources {
+	for k, v := range response.Resources {
 		if v["Type"] == "Droplet" {
 			d := buildRequest("TestStack", "Droplet", v)
 			_, err := d.build(v)
-			if err == nil {
+			if err == nil && k == "Asdf" {
 				t.Fatal("expected error to be not nil")
 			}
 		}
