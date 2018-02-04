@@ -30,7 +30,7 @@ Resources:
 	}
 	for _, v := range response.Resources {
 		if v["Type"] == "Droplet" {
-			d := buildRequest("TestStack", "Droplet", v)
+			d := buildResource("TestStack", "Droplet", v)
 			req, err := d.build(v)
 			if err != nil {
 				t.Fatal("expected error to be nil. was: ", err)
@@ -68,7 +68,7 @@ Resources:
 	}
 	for k, v := range response.Resources {
 		if v["Type"] == "Droplet" {
-			d := buildRequest("TestStack", "Droplet", v)
+			d := buildResource("TestStack", "Droplet", v)
 			_, err := d.build(v)
 			if err == nil && k == "Asdf" {
 				t.Fatal("expected error to be not nil")

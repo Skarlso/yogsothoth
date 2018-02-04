@@ -1,8 +1,6 @@
 package yogsot
 
 import (
-	"os"
-
 	"github.com/digitalocean/godo"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -27,12 +25,13 @@ func (t *Token) Token() (*oauth2.Token, error) {
 }
 
 // NewClient produces a client for Yogsothoth.
-func NewClient() *YogClient {
-	oauthClient := oauth2.NewClient(context.Background(), &Token{AccessToken: os.Getenv("DO_TOKEN")})
+func NewClient(token string) *YogClient {
+	oauthClient := oauth2.NewClient(context.Background(), &Token{AccessToken: token})
 	yogClient := YogClient{godo.NewClient(oauthClient)}
 	return &yogClient
 }
 
+// NewContext provides a new context.
 func NewContext() context.Context {
 	return context.TODO()
 }

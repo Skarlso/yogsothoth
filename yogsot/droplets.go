@@ -7,6 +7,7 @@ import (
 	"github.com/digitalocean/godo"
 )
 
+// Droplet is a struct that builds a droplet request.
 type Droplet struct {
 }
 
