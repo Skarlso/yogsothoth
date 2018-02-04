@@ -2,6 +2,7 @@ package yogsot
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/digitalocean/godo"
@@ -11,7 +12,7 @@ import (
 type Droplet struct {
 }
 
-func (d Droplet) build(resource map[string]interface{}) (interface{}, error) {
+func (d Droplet) buildRequest(stackname string, resource map[string]interface{}) (*godo.DropletCreateRequest, error) {
 	req := &godo.DropletCreateRequest{}
 	for k, v := range resource {
 		if k == "Type" {
@@ -45,8 +46,18 @@ func (d Droplet) build(resource map[string]interface{}) (interface{}, error) {
 		}
 		val.Set(reflect.ValueOf(v))
 	}
-	req.Tags = []string{"Mind1most"}
+	req.Tags = []string{stackname}
 	return req, nil
+}
+
+func (d Droplet) build(stackname string, resource map[string]interface{}) error {
+	req, err := d.buildRequest(stackname, resource)
+	if err != nil {
+		return err
+	}
+	fmt.Println(req)
+	// build droplet with client here
+	return nil
 }
 
 func createDroplet(request *godo.DropletCreateRequest) {

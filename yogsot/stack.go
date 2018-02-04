@@ -6,14 +6,18 @@ import (
 
 // CreateStack creates group of resources and logically bundles them together.
 func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse, error) {
-	_, err := parseTemplate(request.TemplateBody)
+	csi, err := parseTemplate(request.TemplateBody)
 	if err != nil {
 		return CreateStackResponse{}, errors.New("error while parsing tempalte: " + err.Error())
 	}
-	// for _, v := range req.Resources {
-	// 	fmt.Println("Received the following resources:")
-	// 	// fmt.Printf("Name: %s, Type: %s\n", v.Name, v.Type)
-	// }
+	// TODO: This has to be a priority / chain of initialization.
+	for _, v := range csi.Resources {
+		d := buildResource(v["Type"].(string))
+		err := d.build(request.StackName, v)
+		if err != nil {
+			return CreateStackResponse{}, err
+		}
+	}
 	return CreateStackResponse{}, nil
 }
 

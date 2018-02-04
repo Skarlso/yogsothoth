@@ -6,11 +6,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Parses a Template file
-// Functions that are provided
-// Equals
-// Variable
-// Parameters
 func parseTemplate(template []byte) (createStackInput, error) {
 	csi := createStackInput{}
 	err := yaml.Unmarshal(template, &csi)

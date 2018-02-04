@@ -2,11 +2,9 @@ package yogsot
 
 import (
 	"testing"
-
-	"github.com/digitalocean/godo"
 )
 
-func TestRequestBuilder(t *testing.T) {
+func TestDropletRequestBuilder(t *testing.T) {
 	template := []byte(`
 Parameters:
   StackName:
@@ -30,20 +28,19 @@ Resources:
 	}
 	for _, v := range response.Resources {
 		if v["Type"] == "Droplet" {
-			d := buildResource("TestStack", "Droplet", v)
-			req, err := d.build(v)
+			d := buildResource("Droplet")
+			req, err := d.(Droplet).buildRequest("TestStack", v)
 			if err != nil {
 				t.Fatal("expected error to be nil. was: ", err)
 			}
-			godoReq := req.(*godo.DropletCreateRequest)
-			if godoReq.Name != "MyDroplet" {
-				t.Fatalf("droplet name was not MyDroplet. was: %s", godoReq.Name)
+			if req.Name != "MyDroplet" {
+				t.Fatalf("droplet name was not MyDroplet. was: %s", req.Name)
 			}
 		}
 	}
 }
 
-func TestRequestBuilderUnknownField(t *testing.T) {
+func TestDropletRequestBuilderUnknownField(t *testing.T) {
 	template := []byte(`
 Parameters:
   StackName:
@@ -68,8 +65,8 @@ Resources:
 	}
 	for k, v := range response.Resources {
 		if v["Type"] == "Droplet" {
-			d := buildResource("TestStack", "Droplet", v)
-			_, err := d.build(v)
+			d := buildResource("Droplet")
+			_, err := d.(Droplet).buildRequest("TestStack", v)
 			if err == nil && k == "Asdf" {
 				t.Fatal("expected error to be not nil")
 			}

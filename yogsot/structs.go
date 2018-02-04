@@ -13,6 +13,8 @@ type CreateStackRequest struct {
 
 // CreateStackResponse create stack response.
 type CreateStackResponse struct {
+	Name  string
+	Error error
 }
 
 // DeleteStackRequest delete stack request.
@@ -38,13 +40,9 @@ type Parameter struct {
 	Description string `yaml:"Description"`
 }
 
-// // Resource is parsed as a map[string][interface{}] so that it can be
-// // determined what kind of resource it is and parse it further accordingly.
-// type Resource struct {
-// }
-
+// Resource defines a resource which is able to build itself.
 type Resource interface {
-	build(data map[string]interface{}) (interface{}, error)
+	build(string, map[string]interface{}) error
 }
 
 type createStackInput struct {
