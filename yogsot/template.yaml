@@ -8,14 +8,13 @@ Parameters:
     Type: Number
     Default: 80
 
+# TODO: Need a way to find out resource initialization priority order
 Resources:
   # The name of the resource
   Droplet:
     Name: MyDroplet
-    # Type of the resource which will be used to determine what to parse it as
     Type: Droplet
     Image:
-      Slug: "ubuntu-14-04-x64"
-    SSHKeys:
-      - Fingerprint: "Fingerprint1"
-      - Fingerprint: "Fingerprint2"
+      Slug: ubuntu-14-04-x64
+    Size: 512mb
+    Region: nyc3

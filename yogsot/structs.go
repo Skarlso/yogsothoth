@@ -43,6 +43,10 @@ type Parameter struct {
 // type Resource struct {
 // }
 
+type Resource interface {
+	build(data map[string]interface{}) (interface{}, error)
+}
+
 type createStackInput struct {
 	Parameters map[string]Parameter              `yaml:"Parameters"`
 	Resources  map[string]map[string]interface{} `yaml:"Resources"`
