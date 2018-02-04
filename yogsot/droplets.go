@@ -10,6 +10,7 @@ import (
 // Droplet is a struct that builds a droplet request.
 type Droplet struct {
 	Response *godo.Response
+	Droplet  *godo.Droplet
 }
 
 func (d Droplet) buildRequest(stackname string, resource map[string]interface{}) (*godo.DropletCreateRequest, error) {
@@ -50,13 +51,19 @@ func (d Droplet) buildRequest(stackname string, resource map[string]interface{})
 	return req, nil
 }
 
-func (d Droplet) build(stackname string, resource map[string]interface{}) error {
-	_, err := d.buildRequest(stackname, resource)
+func (d Droplet) build(stackname string, resource map[string]interface{}, yogClient *YogClient) (interface{}, error) {
+	req, err := d.buildRequest(stackname, resource)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	// build droplet with client here
-	return nil
+	context := NewContext()
+	droplet, response, err := yogClient.Droplets.Create(context, req)
+	if err != nil {
+		return nil, err
+	}
+	d.Response = response
+	d.Droplet = droplet
+	return d, nil
 }
 
 func createDroplet(request *godo.DropletCreateRequest) {

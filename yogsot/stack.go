@@ -13,17 +13,17 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 
 	response := CreateStackResponse{Name: request.StackName, Error: nil}
 	// TODO: This has to be a priority / chain of initialization.
-	builtResources := []Resource{}
+	builtResources := []interface{}{}
 	for _, v := range csi.Resources {
 		d, err := buildResource(v["Type"].(string))
 		if err != nil {
 			return CreateStackResponse{}, err
 		}
-		err = d.build(request.StackName, v)
+		r, err := d.build(request.StackName, v, y)
 		if err != nil {
 			return CreateStackResponse{}, err
 		}
-		builtResources = append(builtResources, d.(Droplet))
+		builtResources = append(builtResources, r)
 	}
 	response.Resources = builtResources
 	return response, nil

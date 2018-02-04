@@ -15,7 +15,7 @@ type CreateStackRequest struct {
 type CreateStackResponse struct {
 	Name      string
 	Error     error
-	Resources []Resource
+	Resources []interface{}
 }
 
 // DeleteStackRequest delete stack request.
@@ -43,7 +43,7 @@ type Parameter struct {
 
 // Resource defines a resource which is able to build itself.
 type Resource interface {
-	build(string, map[string]interface{}) error
+	build(string, map[string]interface{}, *YogClient) (interface{}, error)
 }
 
 type createStackInput struct {
