@@ -1,6 +1,6 @@
 # Yog-Sothoth
 
-![Logo](img/logo.jpg)
+![Logo](img/yog_logo.png)
 
 [![Build Status](https://travis-ci.org/Skarlso/yogsothoth.svg?branch=master)](https://travis-ci.org/Skarlso/yogsothoth)
 
