@@ -11,10 +11,11 @@ import (
 type Droplet struct {
 	Response *godo.Response
 	Droplet  *godo.Droplet
+	Request  *godo.DropletCreateRequest
 	Priority int
 }
 
-func (d Droplet) buildRequest(stackname string, resource map[string]interface{}) (*godo.DropletCreateRequest, error) {
+func (d Droplet) buildRequest(stackname string, resource map[string]interface{}) (Droplet, error) {
 	req := &godo.DropletCreateRequest{}
 	for k, v := range resource {
 		if k == "Type" {
@@ -57,21 +58,18 @@ func (d Droplet) buildRequest(stackname string, resource map[string]interface{})
 		ref := reflect.ValueOf(req)
 		val := reflect.Indirect(ref).FieldByName(k)
 		if val == reflect.ValueOf(nil) {
-			return req, errors.New("field not found: " + k)
+			return d, errors.New("field not found: " + k)
 		}
 		val.Set(reflect.ValueOf(v))
 	}
 	req.Tags = append(req.Tags, stackname)
-	return req, nil
+	d.Request = req
+	return d, nil
 }
 
 func (d Droplet) build(stackname string, resource map[string]interface{}, yogClient *YogClient) (interface{}, error) {
-	req, err := d.buildRequest(stackname, resource)
-	if err != nil {
-		return nil, err
-	}
 	context := NewContext()
-	droplet, response, err := yogClient.Droplets.Create(context, req)
+	droplet, response, err := yogClient.Droplets.Create(context, d.Request)
 	if err != nil {
 		return nil, err
 	}

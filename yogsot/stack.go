@@ -12,7 +12,6 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 	}
 
 	response := CreateStackResponse{Name: request.StackName, Error: nil}
-	// TODO: This has to be a priority / chain of initialization.
 	builtResources := []interface{}{}
 	for _, v := range csi.Resources {
 		var s Service
@@ -20,12 +19,18 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 		if err != nil {
 			return CreateStackResponse{}, err
 		}
-		r, err := d.build(request.StackName, v, y)
-		if err != nil {
-			return CreateStackResponse{}, err
-		}
-		builtResources = append(builtResources, r)
+		builtResources = append(builtResources, d)
+
+		// r, err := d.build(request.StackName, v, y)
+		// if err != nil {
+		// 	return CreateStackResponse{}, err
+		// }
 	}
+
+	// There can be many droplet assigned to many services.
+	// Need a way ~!Ref~ to tie a droplet to a service.
+	// Once located, create the droplet and save its ID.
+	// When that is done, create the rest of the services belonging to that droplet.
 	response.Resources = builtResources
 	return response, nil
 }

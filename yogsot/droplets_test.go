@@ -28,15 +28,15 @@ Resources:
 		t.Fatal("failed with error: ", err)
 	}
 	d := Droplet{}
-	req, err := d.buildRequest("TestStack", response.Resources["Droplet"])
+	d, err = d.buildRequest("TestStack", response.Resources["Droplet"])
 	if err != nil {
 		t.Fatal("expected error to be nil. was: ", err)
 	}
-	if len(req.SSHKeys) < 2 {
-		t.Fatalf("fingerprint count was incorrect: %d", len(req.SSHKeys))
+	if len(d.Request.SSHKeys) < 2 {
+		t.Fatalf("fingerprint count was incorrect: %d", len(d.Request.SSHKeys))
 	}
-	if req.SSHKeys[0].Fingerprint != "Fingerprint1" {
-		t.Fatalf("expect: 'Fingerprint1' was: %s", req.SSHKeys[0].Fingerprint)
+	if d.Request.SSHKeys[0].Fingerprint != "Fingerprint1" {
+		t.Fatalf("expect: 'Fingerprint1' was: %s", d.Request.SSHKeys[0].Fingerprint)
 	}
 }
 
@@ -66,15 +66,15 @@ Resources:
 		t.Fatal("failed with error: ", err)
 	}
 	d := Droplet{}
-	req, err := d.buildRequest("TestStack", response.Resources["Droplet"])
+	d, err = d.buildRequest("TestStack", response.Resources["Droplet"])
 	if err != nil {
 		t.Fatal("expected error to be nil. was: ", err)
 	}
-	if len(req.Volumes) < 2 {
-		t.Fatalf("volumes count was incorrect: %d", len(req.Volumes))
+	if len(d.Request.Volumes) < 2 {
+		t.Fatalf("volumes count was incorrect: %d", len(d.Request.Volumes))
 	}
-	if req.Volumes[0].Name != "VolumeName1" {
-		t.Fatalf("expect: 'VolumeName1' was: %s", req.Volumes[0].Name)
+	if d.Request.Volumes[0].Name != "VolumeName1" {
+		t.Fatalf("expect: 'VolumeName1' was: %s", d.Request.Volumes[0].Name)
 	}
 }
 
@@ -103,7 +103,7 @@ Resources:
 		t.Fatal("failed with error: ", err)
 	}
 	d := Droplet{}
-	_, err = d.buildRequest("TestStack", response.Resources["Droplet"])
+	d, err = d.buildRequest("TestStack", response.Resources["Droplet"])
 	if err == nil {
 		t.Fatal("expected error to be not nil")
 	}
