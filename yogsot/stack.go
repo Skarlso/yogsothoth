@@ -15,7 +15,8 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 	// TODO: This has to be a priority / chain of initialization.
 	builtResources := []interface{}{}
 	for _, v := range csi.Resources {
-		d, err := buildResource(v["Type"].(string))
+		var s Service
+		d, err := buildResource(s.Service(v["Type"].(string)))
 		if err != nil {
 			return CreateStackResponse{}, err
 		}

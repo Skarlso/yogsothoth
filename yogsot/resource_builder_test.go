@@ -28,7 +28,7 @@ Resources:
 	}
 	for _, v := range response.Resources {
 		if v["Type"] == "Droplet" {
-			d, _ := buildResource("Droplet")
+			d, _ := buildResource(DROPLET)
 			req, err := d.(Droplet).buildRequest("TestStack", v)
 			if err != nil {
 				t.Fatal("expected error to be nil. was: ", err)
@@ -41,7 +41,7 @@ Resources:
 }
 
 func TestUnknownResourceType(t *testing.T) {
-	_, err := buildResource("No")
+	_, err := buildResource(999)
 	if err == nil {
 		t.Fatal("should have failed with unknown resource type")
 	}

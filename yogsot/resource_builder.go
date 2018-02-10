@@ -2,11 +2,11 @@ package yogsot
 
 import "errors"
 
-func buildResource(T string) (Resource, error) {
+func buildResource(T Service) (Resource, error) {
 	switch T {
-	case "Droplet":
-		return Droplet{}, nil
+	case DROPLET:
+		return Droplet{Priority: 0}, nil
 	default:
-		return nil, errors.New("unknown resource type: " + T)
+		return nil, errors.New("unknown resource type: " + T.String())
 	}
 }
