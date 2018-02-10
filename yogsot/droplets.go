@@ -41,7 +41,16 @@ func (d Droplet) buildRequest(stackname string, resource map[string]interface{})
 		}
 
 		if k == "Volumes" {
-
+			names := v.([]interface{})
+			volumes := []godo.DropletCreateVolume{}
+			for _, name := range names {
+				volumes = append(volumes, godo.DropletCreateVolume{
+					ID:   name.(string),
+					Name: name.(string),
+				})
+			}
+			req.Volumes = volumes
+			continue
 		}
 
 		ref := reflect.ValueOf(req)
@@ -51,7 +60,7 @@ func (d Droplet) buildRequest(stackname string, resource map[string]interface{})
 		}
 		val.Set(reflect.ValueOf(v))
 	}
-	req.Tags = []string{stackname}
+	req.Tags = append(req.Tags, stackname)
 	return req, nil
 }
 

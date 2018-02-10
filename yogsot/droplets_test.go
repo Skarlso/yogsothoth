@@ -40,6 +40,44 @@ Resources:
 	}
 }
 
+func TestDropletRequestBuilderVolumes(t *testing.T) {
+	template := []byte(`
+Parameters:
+  StackName:
+    Description: The name of the stack to deploy
+    Type: String
+    Default: FurnaceStack
+  Port:
+    Description: Test port
+    Type: Number
+    Default: 80
+
+Resources:
+  Droplet:
+    Name: MyDroplet
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+    Volumes:
+      - VolumeName1
+      - VolumeName2`)
+	response, err := parseTemplate(template)
+	if err != nil {
+		t.Fatal("failed with error: ", err)
+	}
+	d := Droplet{}
+	req, err := d.buildRequest("TestStack", response.Resources["Droplet"])
+	if err != nil {
+		t.Fatal("expected error to be nil. was: ", err)
+	}
+	if len(req.Volumes) < 2 {
+		t.Fatalf("volumes count was incorrect: %d", len(req.Volumes))
+	}
+	if req.Volumes[0].Name != "VolumeName1" {
+		t.Fatalf("expect: 'VolumeName1' was: %s", req.Volumes[0].Name)
+	}
+}
+
 func TestDropletRequestBuilderUnknownField(t *testing.T) {
 	template := []byte(`
 Parameters:
