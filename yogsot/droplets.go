@@ -32,12 +32,16 @@ func (d Droplet) buildRequest(stackname string, resource map[string]interface{})
 			for _, fingerprint := range fingerprints {
 				keys = append(keys, godo.DropletCreateSSHKey{
 					ID:          id,
-					Fingerprint: fingerprint.(map[interface{}]interface{})["Fingerprint"].(string),
+					Fingerprint: fingerprint.(string),
 				})
 				id++
 			}
 			req.SSHKeys = keys
 			continue
+		}
+
+		if k == "Volumes" {
+
 		}
 
 		ref := reflect.ValueOf(req)
@@ -64,8 +68,4 @@ func (d Droplet) build(stackname string, resource map[string]interface{}, yogCli
 	d.Response = response
 	d.Droplet = droplet
 	return d, nil
-}
-
-func createDroplet(request *godo.DropletCreateRequest) {
-
 }
