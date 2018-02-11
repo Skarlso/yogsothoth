@@ -9,7 +9,7 @@ import (
 // Droplets are maps of droplets with corresponding ids
 type Droplets struct {
 	droplets map[string]int
-	*sync.Mutex
+	sync.Mutex
 }
 
 var droplets = Droplets{
@@ -28,15 +28,15 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 	for _, v := range csi.Resources {
 		var s Service
 		d, err := buildResource(s.Service(v["Type"].(string)))
+		// Droplet doesn't yet have an ID. This will be updated once they are created.
+		if err != nil {
+			return CreateStackResponse{}, err
+		}
+		err = d.buildRequest(request.StackName, v)
 		if err != nil {
 			return CreateStackResponse{}, err
 		}
 		builtResources = append(builtResources, d)
-
-		// r, err := d.build(request.StackName, v, y)
-		// if err != nil {
-		// 	return CreateStackResponse{}, err
-		// }
 	}
 
 	// There can be many droplet assigned to many services.
@@ -65,7 +65,7 @@ func (y *YogClient) launchAllDroplets(droplets []interface{}) {
 	sem := make(chan int, 4)
 	var wg sync.WaitGroup
 	for _, v := range droplets {
-		if d, ok := v.(Droplet); ok {
+		if d, ok := v.(*Droplet); ok {
 			wg.Add(1)
 			go func(d Droplet) {
 				defer wg.Done()
@@ -74,7 +74,7 @@ func (y *YogClient) launchAllDroplets(droplets []interface{}) {
 					log.Fatal("Error while launching droplet: ", d.Droplet.Name)
 				}
 				<-sem
-			}(d)
+			}(*d)
 		}
 	}
 	wg.Wait()
@@ -84,10 +84,12 @@ func (y *YogClient) launchDroplet(droplet Droplet) error {
 	droplets.Lock()
 	defer droplets.Unlock()
 	log.Println("Launching droplet.")
-	err := droplet.build("stackname", y)
+	err := droplet.build(y)
 	if err != nil {
 		return err
 	}
-	droplets.droplets[droplet.Droplet.Name] = droplet.Droplet.ID
+	if droplet.Droplet != nil {
+		droplets.droplets[droplet.Droplet.Name] = droplet.Droplet.ID
+	}
 	return nil
 }

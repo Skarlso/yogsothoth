@@ -10,6 +10,10 @@ type FloatingIP struct {
 	Priority   int
 }
 
-func (fip *FloatingIP) build(stackname string, yogClient *YogClient) error {
+func (fip *FloatingIP) build(yogClient *YogClient) error {
+	return nil
+}
+
+func (fip *FloatingIP) buildRequest(stackname string, resource map[string]interface{}) error {
 	return nil
 }

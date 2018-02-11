@@ -100,7 +100,8 @@ type Parameter struct {
 
 // Resource defines a resource which is able to build itself.
 type Resource interface {
-	build(string, *YogClient) error
+	build(*YogClient) error
+	buildRequest(string, map[string]interface{}) error
 }
 
 type createStackInput struct {

@@ -67,7 +67,7 @@ func (d *Droplet) buildRequest(stackname string, resource map[string]interface{}
 	return nil
 }
 
-func (d *Droplet) build(stackname string, yogClient *YogClient) error {
+func (d *Droplet) build(yogClient *YogClient) error {
 	context := NewContext()
 	droplet, response, err := yogClient.Droplets.Create(context, d.Request)
 	if err != nil {
