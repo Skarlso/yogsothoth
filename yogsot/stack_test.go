@@ -1,10 +1,12 @@
 package yogsot
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
 	"testing"
 
 	"github.com/digitalocean/godo"
@@ -50,8 +52,30 @@ func TestCreateStack(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/droplets", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, http.MethodPost)
-		fmt.Fprint(w, `{"droplets": [{"id":1},{"id":2}]}`)
+		expected := map[string]interface{}{
+			"name":               "name",
+			"region":             "region",
+			"size":               "size",
+			"image":              "ubuntu-14-04-x64",
+			"ssh_keys":           nil,
+			"backups":            false,
+			"ipv6":               false,
+			"private_networking": false,
+			"monitoring":         false,
+			"tags":               []interface{}{"TestStack"},
+		}
+
+		var v map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			t.Fatalf("decode json: %v", err)
+		}
+
+		if !reflect.DeepEqual(v, expected) {
+			t.Errorf("Request body\n got=%#v\nwant=%#v", v, expected)
+		}
+
+		fmt.Fprintf(w, `{"droplet":{"id":1}, "links":{"actions": [{"id": 1, "href": "http://example.com", "rel": "create"}]}}`)
 	})
 
 	template := []byte(`
@@ -67,7 +91,14 @@ func TestCreateStack(t *testing.T) {
 
   Resources:
     Droplet:
-      Name: MyDroplet
+      Name: name
+      Region: region
+      Size: size
+      Image: 1
+      Backups: false
+      IPv6: false
+      PrivateNetworking: false
+      Monitoring: false
       Type: Droplet
       Image:
         Slug: "ubuntu-14-04-x64"`)
