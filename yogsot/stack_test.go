@@ -273,9 +273,9 @@ func TestCreateStackMultipleResources(t *testing.T) {
       Image:
         Slug: "ubuntu-14-04-x64"
     FloatingIP:
-      Name: MyFloatingIP
       Type: FloatingIP
-      ID: !Ref Droplet`)
+      Region: asdf
+      DropletID: !Ref MyDroplet`)
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
 	response, err := yogClient.CreateStack(request)
