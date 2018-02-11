@@ -29,12 +29,12 @@ Resources:
 	for _, v := range response.Resources {
 		if v["Type"] == "Droplet" {
 			d, _ := buildResource(DROPLET)
-			d, err = d.(Droplet).buildRequest("TestStack", v)
+			err = d.(*Droplet).buildRequest("TestStack", v)
 			if err != nil {
 				t.Fatal("expected error to be nil. was: ", err)
 			}
-			if d.(Droplet).Request.Name != "MyDroplet" {
-				t.Fatalf("droplet name was not MyDroplet. was: %s", d.(Droplet).Request.Name)
+			if d.(*Droplet).Request.Name != "MyDroplet" {
+				t.Fatalf("droplet name was not MyDroplet. was: %s", d.(*Droplet).Request.Name)
 			}
 		}
 	}

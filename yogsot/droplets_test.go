@@ -28,7 +28,7 @@ Resources:
 		t.Fatal("failed with error: ", err)
 	}
 	d := Droplet{}
-	d, err = d.buildRequest("TestStack", response.Resources["Droplet"])
+	err = d.buildRequest("TestStack", response.Resources["Droplet"])
 	if err != nil {
 		t.Fatal("expected error to be nil. was: ", err)
 	}
@@ -66,7 +66,7 @@ Resources:
 		t.Fatal("failed with error: ", err)
 	}
 	d := Droplet{}
-	d, err = d.buildRequest("TestStack", response.Resources["Droplet"])
+	err = d.buildRequest("TestStack", response.Resources["Droplet"])
 	if err != nil {
 		t.Fatal("expected error to be nil. was: ", err)
 	}
@@ -103,7 +103,7 @@ Resources:
 		t.Fatal("failed with error: ", err)
 	}
 	d := Droplet{}
-	d, err = d.buildRequest("TestStack", response.Resources["Droplet"])
+	err = d.buildRequest("TestStack", response.Resources["Droplet"])
 	if err == nil {
 		t.Fatal("expected error to be not nil")
 	}
