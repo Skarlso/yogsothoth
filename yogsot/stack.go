@@ -39,14 +39,9 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 		builtResources = append(builtResources, d)
 	}
 
-	// There can be many droplet assigned to many services.
-	// Need a way ~!Ref~ to tie a droplet to a service.
-	// Once located, create the droplet and save its ID.
-	// ID Is saved by map[string]int -> {Droplet: 1}
-	// Later on !Ref: Droplet will contain the name of the resource.
-	// This will be easy because dropletIds will have the name like:
-	// dropletIds[refName] -> 1
 	y.launchAllDroplets(builtResources)
+	y.setupDropletIDsForResources(builtResources)
+	// y.launchTheRestOfTheResources(builtResources)
 	response.Resources = builtResources
 	return response, nil
 }
@@ -61,26 +56,30 @@ func (y *YogClient) DescribeStack(request DescribeStackRequest) (DescribeStackRe
 	return DescribeStackResponse{}, nil
 }
 
+// launchAllDroplets goes through the resources and launches all the
+// droplets concurrently. It uses a semaphore to limit the number
+// of concurrent droplet launches. Currently that is hardcoded to 4.
 func (y *YogClient) launchAllDroplets(droplets []interface{}) {
 	sem := make(chan int, 4)
 	var wg sync.WaitGroup
 	for _, v := range droplets {
 		if d, ok := v.(*Droplet); ok {
 			wg.Add(1)
-			go func(d Droplet) {
+			go func(d *Droplet) {
 				defer wg.Done()
 				sem <- 1
 				if err := y.launchDroplet(d); err != nil {
 					log.Fatal("Error while launching droplet: ", d.Droplet.Name)
 				}
 				<-sem
-			}(*d)
+			}(d)
 		}
 	}
 	wg.Wait()
 }
 
-func (y *YogClient) launchDroplet(droplet Droplet) error {
+// launchDroplet launches a single droplet
+func (y *YogClient) launchDroplet(droplet *Droplet) error {
 	droplets.Lock()
 	defer droplets.Unlock()
 	log.Println("Launching droplet.")
@@ -88,8 +87,23 @@ func (y *YogClient) launchDroplet(droplet Droplet) error {
 	if err != nil {
 		return err
 	}
-	if droplet.Droplet != nil {
-		droplets.droplets[droplet.Droplet.Name] = droplet.Droplet.ID
+	// if droplet.Droplet != nil {
+	droplets.droplets[droplet.Request.Name] = droplet.Droplet.ID
+	// }
+	return nil
+}
+
+// setupDropletIDsForResources for each service there is a different way
+// to provide droplet ids to use
+func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
+	for _, v := range resources {
+		switch i := v.(type) {
+		case *FloatingIP:
+			i.setDropletID(droplets.droplets[i.DropletName])
+		case *Droplet:
+		default:
+			return errors.New("unknown type")
+		}
 	}
 	return nil
 }

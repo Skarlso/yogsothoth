@@ -4,10 +4,10 @@ import "github.com/digitalocean/godo"
 
 // FloatingIP is a struct which creates a floating ip create request.
 type FloatingIP struct {
-	Response   *godo.Response
-	FloatingIP *godo.FloatingIP
-	Request    *godo.FloatingIPCreateRequest
-	Priority   int
+	Response    *godo.Response
+	FloatingIP  *godo.FloatingIP
+	Request     *godo.FloatingIPCreateRequest
+	DropletName string
 }
 
 func (fip *FloatingIP) build(yogClient *YogClient) error {
@@ -25,6 +25,7 @@ func (fip *FloatingIP) buildRequest(stackname string, resource map[string]interf
 	req := &godo.FloatingIPCreateRequest{}
 	req.Region = resource["Region"].(string)
 	fip.Request = req
+	fip.DropletName = resource["DropletID"].(string)
 	return nil
 }
 

@@ -12,7 +12,6 @@ type Droplet struct {
 	Response *godo.Response
 	Droplet  *godo.Droplet
 	Request  *godo.DropletCreateRequest
-	Priority int
 }
 
 func (d *Droplet) buildRequest(stackname string, resource map[string]interface{}) error {

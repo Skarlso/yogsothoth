@@ -251,8 +251,49 @@ func TestCreateStackMultipleResources(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/droplets", func(w http.ResponseWriter, r *http.Request) {
+		expected := map[string]interface{}{
+			"name":               "MyDroplet",
+			"region":             "region",
+			"size":               "size",
+			"image":              "ubuntu-14-04-x64",
+			"ssh_keys":           nil,
+			"backups":            false,
+			"ipv6":               false,
+			"private_networking": false,
+			"monitoring":         false,
+			"tags":               []interface{}{"TestStack"},
+		}
+
+		var v map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			t.Fatalf("decode json: %v", err)
+		}
+
+		if !reflect.DeepEqual(v, expected) {
+			t.Errorf("Request body\n got=%#v\nwant=%#v", v, expected)
+		}
+
+		fmt.Fprintf(w, `{"droplet":{"id":987}, "links":{"actions": [{"id": 1, "href": "http://example.com", "rel": "create"}]}}`)
+	})
+
+	mux.HandleFunc("/v2/floating_ips", func(w http.ResponseWriter, r *http.Request) {
+		expected := map[string]interface{}{
+			"region":    "nyc3",
+			"dropletid": 1,
+		}
+		var v map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(v)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		testMethod(t, r, http.MethodPost)
-		fmt.Fprint(w, `{"droplets": [{"id":1},{"id":2}]}`)
+		if !reflect.DeepEqual(v, expected) {
+			t.Errorf("Request body = %+v, expected %+v", v, expected)
+		}
+
+		fmt.Fprint(w, `{"floating_ip":{"region":{"slug":"nyc3"},"droplet":{"id":1},"ip":"192.168.0.1"}}`)
 	})
 
 	template := []byte(`
@@ -267,15 +308,21 @@ func TestCreateStackMultipleResources(t *testing.T) {
       Default: 80
 
   Resources:
-    Droplet:
+    Droplet1:
       Name: MyDroplet
+      Region: region
+      Size: size
+      Backups: false
+      IPv6: false
+      PrivateNetworking: false
+      Monitoring: false
       Type: Droplet
       Image:
         Slug: "ubuntu-14-04-x64"
     FloatingIP:
       Type: FloatingIP
-      Region: asdf
-      DropletID: !Ref MyDroplet`)
+      Region: nyc3
+      DropletID: MyDroplet`)
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
 	response, err := yogClient.CreateStack(request)
@@ -284,5 +331,12 @@ func TestCreateStackMultipleResources(t *testing.T) {
 	}
 	if len(response.Resources) < 1 {
 		t.Fatal("should have contained one created resource")
+	}
+	for _, v := range response.Resources {
+		if f, ok := v.(*FloatingIP); ok {
+			if f.Request.DropletID != 987 {
+				t.Fatalf("floatingip request droplet id should have equaled 987. Was instead: %d\n", f.Request.DropletID)
+			}
+		}
 	}
 }
