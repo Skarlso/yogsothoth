@@ -1,6 +1,10 @@
 package yogsot
 
-import "github.com/digitalocean/godo"
+import (
+	"errors"
+
+	"github.com/digitalocean/godo"
+)
 
 // FloatingIP is a struct which creates a floating ip create request.
 type FloatingIP struct {
@@ -23,12 +27,27 @@ func (fip *FloatingIP) build(yogClient *YogClient) error {
 
 func (fip *FloatingIP) buildRequest(stackname string, resource map[string]interface{}) error {
 	req := &godo.FloatingIPCreateRequest{}
-	req.Region = resource["Region"].(string)
+	if v, ok := resource["Region"]; ok {
+		req.Region = v.(string)
+	} else {
+		return errors.New("missing 'Region' key")
+	}
+	if v, ok := resource["DropletID"]; ok {
+		if id, ok := v.(string); ok {
+			fip.DropletName = id
+			req.DropletID = -1
+		} else if id, ok := v.(int); ok {
+			req.DropletID = id
+		}
+	} else {
+		return errors.New("missing DropletID key; set reference to a droplet name or set id to use")
+	}
 	fip.Request = req
-	fip.DropletName = resource["DropletID"].(string)
 	return nil
 }
 
 func (fip *FloatingIP) setDropletID(ID int) {
-	fip.Request.DropletID = ID
+	if fip.Request.DropletID == -1 {
+		fip.Request.DropletID = ID
+	}
 }
