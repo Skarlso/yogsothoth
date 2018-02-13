@@ -2,6 +2,7 @@ package yogsot
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"sync"
 )
@@ -41,7 +42,8 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 
 	y.launchAllDroplets(builtResources)
 	y.setupDropletIDsForResources(builtResources)
-	// y.launchTheRestOfTheResources(builtResources)
+	y.launchTheRestOfTheResources(builtResources)
+
 	response.Resources = builtResources
 	return response, nil
 }
@@ -102,8 +104,23 @@ func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
 			i.setDropletID(droplets.droplets[i.DropletName])
 		case *Droplet:
 		default:
-			return errors.New("unknown type")
+			s := fmt.Sprintf("unknown type %v", i)
+			return errors.New(s)
 		}
 	}
+	return nil
+}
+
+func (y *YogClient) launchTheRestOfTheResources(resources []interface{}) error {
+	for _, v := range resources {
+		if _, ok := v.(*Droplet); ok {
+			continue
+		}
+		err := v.(Resource).build(y)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

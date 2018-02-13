@@ -279,21 +279,21 @@ func TestCreateStackMultipleResources(t *testing.T) {
 
 	mux.HandleFunc("/v2/floating_ips", func(w http.ResponseWriter, r *http.Request) {
 		expected := map[string]interface{}{
-			"region":    "nyc3",
-			"dropletid": 1,
+			"region":     "nyc3",
+			"droplet_id": float64(987),
 		}
 		var v map[string]interface{}
-		err := json.NewDecoder(r.Body).Decode(v)
+		err := json.NewDecoder(r.Body).Decode(&v)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		testMethod(t, r, http.MethodPost)
 		if !reflect.DeepEqual(v, expected) {
-			t.Errorf("Request body = %+v, expected %+v", v, expected)
+			t.Errorf("Request body = %+v, expected = %+v", v, expected)
 		}
 
-		fmt.Fprint(w, `{"floating_ip":{"region":{"slug":"nyc3"},"droplet":{"id":1},"ip":"192.168.0.1"}}`)
+		fmt.Fprint(w, `{"floating_ip":{"region":{"slug":"nyc3"},"droplet":{"id":987},"ip":"192.168.0.1"}}`)
 	})
 
 	template := []byte(`
