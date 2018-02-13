@@ -8,6 +8,8 @@ func buildResource(T Service) (Resource, error) {
 		return new(Droplet), nil
 	case FLOATINGIP:
 		return new(FloatingIP), nil
+	case LOADBALANCER:
+		return new(LoadBalancer), nil
 	default:
 		return nil, errors.New("unknown resource type: " + T.String())
 	}

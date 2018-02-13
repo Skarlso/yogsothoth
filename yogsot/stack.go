@@ -102,6 +102,12 @@ func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
 		switch i := v.(type) {
 		case *FloatingIP:
 			i.setDropletID(droplets.droplets[i.DropletName])
+		case *LoadBalancer:
+			var ids []int
+			for _, v := range i.DropletNames {
+				ids = append(ids, droplets.droplets[v])
+			}
+			i.setDropletIDs(ids)
 		case *Droplet:
 		default:
 			s := fmt.Sprintf("unknown type %v", i)
