@@ -17,6 +17,20 @@ var droplets = Droplets{
 	droplets: make(map[string]int, 0),
 }
 
+// AddDroplet locks the droplets and inserts a new id
+func (d *Droplets) AddDroplet(droplet string, id int) {
+	d.Lock()
+	defer d.Unlock()
+	d.droplets[droplet] = id
+}
+
+// GetID locks and returns the ID of a droplet
+func (d *Droplets) GetID(droplet string) int {
+	d.Lock()
+	defer d.Unlock()
+	return d.droplets[droplet]
+}
+
 // CreateStack creates group of resources and logically bundles them together.
 func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse, error) {
 	csi, err := parseTemplate(request.TemplateBody)
@@ -82,16 +96,12 @@ func (y *YogClient) launchAllDroplets(droplets []interface{}) {
 
 // launchDroplet launches a single droplet
 func (y *YogClient) launchDroplet(droplet *Droplet) error {
-	droplets.Lock()
-	defer droplets.Unlock()
 	log.Println("Launching droplet.")
 	err := droplet.build(y)
 	if err != nil {
 		return err
 	}
-	// if droplet.Droplet != nil {
-	droplets.droplets[droplet.Request.Name] = droplet.Droplet.ID
-	// }
+	droplets.AddDroplet(droplet.Request.Name, droplet.Droplet.ID)
 	return nil
 }
 
@@ -101,11 +111,11 @@ func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
 	for _, v := range resources {
 		switch i := v.(type) {
 		case *FloatingIP:
-			i.setDropletID(droplets.droplets[i.DropletName])
+			i.setDropletID(droplets.GetID(i.DropletName))
 		case *LoadBalancer:
 			var ids []int
 			for _, v := range i.DropletNames {
-				ids = append(ids, droplets.droplets[v])
+				ids = append(ids, droplets.GetID(v))
 			}
 			i.setDropletIDs(ids)
 		case *Droplet:
