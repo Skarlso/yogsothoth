@@ -30,10 +30,10 @@ func (lb *LoadBalancer) build(yogClient *YogClient) error {
 }
 
 func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]interface{}) error {
-	err := checkRequiredFields(resource)
-	if err != nil {
-		return err
-	}
+	// err := checkRequiredFields(resource)
+	// if err != nil {
+	// 	return err
+	// }
 	req := &godo.LoadBalancerRequest{}
 
 	for k, v := range resource {
@@ -59,7 +59,16 @@ func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]inter
 		}
 
 		if k == "HealthCheck" {
-
+			hck := &godo.HealthCheck{}
+			for key, value := range v.(map[interface{}]interface{}) {
+				ref := reflect.ValueOf(hck)
+				refVal := reflect.Indirect(ref).FieldByName(key.(string))
+				if refVal == reflect.ValueOf(nil) {
+					return errors.New("field not found: " + key.(string))
+				}
+				refVal.Set(reflect.ValueOf(value))
+			}
+			req.HealthCheck = hck
 			continue
 		}
 
