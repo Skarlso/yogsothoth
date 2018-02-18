@@ -3,6 +3,7 @@ package yogsot
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -78,30 +79,10 @@ func TestCreateStack(t *testing.T) {
 		fmt.Fprintf(w, `{"droplet":{"id":1}, "links":{"actions": [{"id": 1, "href": "http://example.com", "rel": "create"}]}}`)
 	})
 
-	template := []byte(`
-  Parameters:
-    StackName:
-      Description: The name of the stack to deploy
-      Type: String
-      Default: FurnaceStack
-    Port:
-      Description: Test port
-      Type: Number
-      Default: 80
-
-  Resources:
-    Droplet:
-      Name: name
-      Region: region
-      Size: size
-      Image: 1
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"`)
+	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStack.yaml")
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
 	response, err := yogClient.CreateStack(request)
@@ -146,95 +127,10 @@ func TestCreateStackMoreThanFiveDroplets(t *testing.T) {
 
 	// Normally, the none uniqueness of these names should raise an error.
 	// But for unit testing purposes, I'm ignore those for now.
-	template := []byte(`
-  Parameters:
-    StackName:
-      Description: The name of the stack to deploy
-      Type: String
-      Default: FurnaceStack
-    Port:
-      Description: Test port
-      Type: Number
-      Default: 80
-
-  Resources:
-    Droplet1:
-      Name: name
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"
-    Droplet2:
-      Name: name
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"
-    Droplet3:
-      Name: name
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"
-    Droplet4:
-      Name: name
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"
-    Droplet5:
-      Name: name
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"
-    Droplet6:
-      Name: name
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"
-    Droplet7:
-      Name: name
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"`)
+	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackMoreThanFiveDroplets.yaml")
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
 	response, err := yogClient.CreateStack(request)
@@ -296,33 +192,10 @@ func TestCreateStackMultipleResources(t *testing.T) {
 		fmt.Fprint(w, `{"floating_ip":{"region":{"slug":"nyc3"},"droplet":{"id":987},"ip":"192.168.0.1"}}`)
 	})
 
-	template := []byte(`
-  Parameters:
-    StackName:
-      Description: The name of the stack to deploy
-      Type: String
-      Default: FurnaceStack
-    Port:
-      Description: Test port
-      Type: Number
-      Default: 80
-
-  Resources:
-    Droplet1:
-      Name: MyDroplet
-      Region: region
-      Size: size
-      Backups: false
-      IPv6: false
-      PrivateNetworking: false
-      Monitoring: false
-      Type: Droplet
-      Image:
-        Slug: "ubuntu-14-04-x64"
-    FloatingIP:
-      Type: FloatingIP
-      Region: nyc3
-      DropletID: MyDroplet`)
+	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackMultipleResources.yaml")
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
 	response, err := yogClient.CreateStack(request)
@@ -336,6 +209,140 @@ func TestCreateStackMultipleResources(t *testing.T) {
 		if f, ok := v.(*FloatingIP); ok {
 			if f.Request.DropletID != 987 {
 				t.Fatalf("floatingip request droplet id should have equaled 987. Was instead: %d\n", f.Request.DropletID)
+			}
+		}
+	}
+}
+
+var lbCreateJSONResponse = `
+{
+    "load_balancer":{
+        "id":"8268a81c-fcf5-423e-a337-bbfe95817f23",
+        "name":"example-lb-01",
+        "ip":"",
+        "algorithm":"round_robin",
+        "status":"new",
+        "created_at":"2016-12-15T14:19:09Z",
+        "forwarding_rules":[
+            {
+                "entry_protocol":"https",
+                "entry_port":443,
+                "target_protocol":"http",
+                "target_port":80,
+                "certificate_id":"a-b-c"
+            },
+            {
+                "entry_protocol":"https",
+                "entry_port":444,
+                "target_protocol":"https",
+                "target_port":443,
+                "tls_passthrough":true
+            }
+        ],
+        "health_check":{
+            "protocol":"http",
+            "port":80,
+            "path":"/index.html",
+            "check_interval_seconds":10,
+            "response_timeout_seconds":5,
+            "healthy_threshold":5,
+            "unhealthy_threshold":3
+        },
+        "sticky_sessions":{
+            "type":"cookies",
+            "cookie_name":"DO-LB",
+            "cookie_ttl_seconds":5
+        },
+        "region":{
+            "name":"New York 1",
+            "slug":"nyc1",
+            "sizes":[
+                "512mb",
+                "1gb",
+                "2gb",
+                "4gb",
+                "8gb",
+                "16gb"
+            ],
+            "features":[
+                "private_networking",
+                "backups",
+                "ipv6",
+                "metadata",
+                "storage"
+            ],
+            "available":true
+        },
+        "droplet_ids":[
+            2,
+            21
+        ],
+        "redirect_http_to_https":true
+    }
+}
+`
+
+func TestCreateStackLoadBalancer(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/load_balancers", func(w http.ResponseWriter, r *http.Request) {
+		v := new(godo.LoadBalancerRequest)
+		err := json.NewDecoder(r.Body).Decode(v)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		testMethod(t, r, http.MethodPost)
+		// assert.Equal(t, createRequest, v)
+
+		fmt.Fprint(w, lbCreateJSONResponse)
+	})
+
+	mux.HandleFunc("/v2/droplets", func(w http.ResponseWriter, r *http.Request) {
+		expected := map[string]interface{}{
+			"name":               "MyDroplet",
+			"region":             "region",
+			"size":               "size",
+			"image":              "ubuntu-14-04-x64",
+			"ssh_keys":           nil,
+			"backups":            false,
+			"ipv6":               false,
+			"private_networking": false,
+			"monitoring":         false,
+			"tags":               []interface{}{"TestStack"},
+		}
+
+		var v map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			t.Fatalf("decode json: %v", err)
+		}
+
+		if !reflect.DeepEqual(v, expected) {
+			t.Errorf("Request body\n got=%#v\nwant=%#v", v, expected)
+		}
+
+		fmt.Fprintf(w, `{"droplet":{"id":987}, "links":{"actions": [{"id": 1, "href": "http://example.com", "rel": "create"}]}}`)
+	})
+
+	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackLoadBalancer.yaml")
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
+	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
+	yogClient := newTestClient()
+	response, err := yogClient.CreateStack(request)
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
+	if len(response.Resources) < 1 {
+		t.Fatal("should have contained one created resource")
+	}
+	for _, v := range response.Resources {
+		if ldb, ok := v.(*LoadBalancer); ok {
+			if !reflect.DeepEqual(ldb.Request.DropletIDs, []int{12, 987}) {
+				t.Fatalf("Droplet ids should have equaled [12, 987]. Was instead: %v", ldb.Request.DropletIDs)
 			}
 		}
 	}

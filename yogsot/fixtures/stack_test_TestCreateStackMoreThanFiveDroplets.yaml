@@ -1,0 +1,88 @@
+Parameters:
+  StackName:
+    Description: The name of the stack to deploy
+    Type: String
+    Default: FurnaceStack
+  Port:
+    Description: Test port
+    Type: Number
+    Default: 80
+
+Resources:
+  Droplet1:
+    Name: name
+    Region: region
+    Size: size
+    Backups: false
+    IPv6: false
+    PrivateNetworking: false
+    Monitoring: false
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+  Droplet2:
+    Name: name
+    Region: region
+    Size: size
+    Backups: false
+    IPv6: false
+    PrivateNetworking: false
+    Monitoring: false
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+  Droplet3:
+    Name: name
+    Region: region
+    Size: size
+    Backups: false
+    IPv6: false
+    PrivateNetworking: false
+    Monitoring: false
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+  Droplet4:
+    Name: name
+    Region: region
+    Size: size
+    Backups: false
+    IPv6: false
+    PrivateNetworking: false
+    Monitoring: false
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+  Droplet5:
+    Name: name
+    Region: region
+    Size: size
+    Backups: false
+    IPv6: false
+    PrivateNetworking: false
+    Monitoring: false
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+  Droplet6:
+    Name: name
+    Region: region
+    Size: size
+    Backups: false
+    IPv6: false
+    PrivateNetworking: false
+    Monitoring: false
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"
+  Droplet7:
+    Name: name
+    Region: region
+    Size: size
+    Backups: false
+    IPv6: false
+    PrivateNetworking: false
+    Monitoring: false
+    Type: Droplet
+    Image:
+      Slug: "ubuntu-14-04-x64"

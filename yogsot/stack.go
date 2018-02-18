@@ -116,7 +116,7 @@ func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
 			for _, v := range i.DropletNames {
 				ids = append(ids, droplets.GetID(v))
 			}
-			i.setDropletIDs(ids)
+			i.addDropletIDs(ids)
 		case *Droplet:
 		default:
 			s := fmt.Sprintf("unknown type %v", i)

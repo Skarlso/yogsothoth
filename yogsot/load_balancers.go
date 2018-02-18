@@ -30,11 +30,8 @@ func (lb *LoadBalancer) build(yogClient *YogClient) error {
 }
 
 func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]interface{}) error {
-	// err := checkRequiredFields(resource)
-	// if err != nil {
-	// 	return err
-	// }
-	req := &godo.LoadBalancerRequest{}
+	req := &godo.LoadBalancerRequest{DropletIDs: make([]int, 0)}
+	lb.DropletNames = make([]string, 0)
 
 	for k, v := range resource {
 		if k == "Type" {
@@ -86,7 +83,14 @@ func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]inter
 		}
 
 		if k == "DropletIDs" {
-
+			for _, value := range v.([]interface{}) {
+				switch o := value.(type) {
+				case string:
+					lb.DropletNames = append(lb.DropletNames, o)
+				case int:
+					req.DropletIDs = append(req.DropletIDs, o)
+				}
+			}
 			continue
 		}
 
@@ -101,10 +105,8 @@ func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]inter
 	return nil
 }
 
-func (lb *LoadBalancer) setDropletIDs(IDs []int) {
-	if len(lb.Request.DropletIDs) < 1 {
-		lb.Request.DropletIDs = IDs
-	}
+func (lb *LoadBalancer) addDropletIDs(IDs []int) {
+	lb.Request.DropletIDs = append(lb.Request.DropletIDs, IDs...)
 }
 
 func checkRequiredFields(resource map[string]interface{}) error {
