@@ -96,7 +96,6 @@ func (y *YogClient) launchAllDroplets(droplets []interface{}) {
 
 // launchDroplet launches a single droplet
 func (y *YogClient) launchDroplet(droplet *Droplet) error {
-	log.Println("Launching droplet.")
 	err := droplet.build(y)
 	if err != nil {
 		return err

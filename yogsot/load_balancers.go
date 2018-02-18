@@ -44,13 +44,13 @@ func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]inter
 			forwardingRules := []godo.ForwardingRule{}
 			for _, value := range v.(map[interface{}]interface{}) {
 				fRule := &godo.ForwardingRule{}
-				for key, val := range value.(map[interface{}]interface{}) {
-					ref := reflect.ValueOf(fRule)
-					refVal := reflect.Indirect(ref).FieldByName(key.(string))
-					if refVal == reflect.ValueOf(nil) {
-						return errors.New("field not found: " + key.(string))
-					}
-					refVal.Set(reflect.ValueOf(val))
+				if _, ok := value.(map[interface{}]interface{}); !ok {
+					message := fmt.Sprintf("invalid type for key '%s'. type was: '%v'. should have been 'map'", k, reflect.TypeOf(v))
+					return errors.New(message)
+				}
+				err := setValues(fRule, value.(map[interface{}]interface{}))
+				if err != nil {
+					return err
 				}
 				forwardingRules = append(forwardingRules, *fRule)
 			}
@@ -58,30 +58,30 @@ func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]inter
 			continue
 		}
 
-		if k == "StickySessions" || k == "HealthCheck" {
-			var obj interface{}
-			if k == "StickySessions" {
-				obj = &godo.StickySessions{}
-			} else {
-				obj = &godo.HealthCheck{}
+		if k == "StickySessions" {
+			obj := &godo.StickySessions{}
+			if _, ok := v.(map[interface{}]interface{}); !ok {
+				message := fmt.Sprintf("invalid type for key '%s'. type was: '%v'. should have been 'map'", k, reflect.TypeOf(v))
+				return errors.New(message)
 			}
-			// ss := &godo.StickySessions{}
-			// TODO introduce type assertion check here to prevent errors
-			for key, value := range v.(map[interface{}]interface{}) {
-				ref := reflect.ValueOf(obj)
-				refVal := reflect.Indirect(ref).FieldByName(key.(string))
-				if refVal == reflect.ValueOf(nil) {
-					return errors.New("field not found: " + key.(string))
-				}
-				refVal.Set(reflect.ValueOf(value))
+			err := setValues(obj, v.(map[interface{}]interface{}))
+			if err != nil {
+				return err
 			}
-			switch i := obj.(type) {
-			case *godo.StickySessions:
-				req.StickySessions = i
-			case *godo.HealthCheck:
-				req.HealthCheck = i
+			req.StickySessions = obj
+			continue
+		}
+		if k == "HealthCheck" {
+			obj := &godo.HealthCheck{}
+			if _, ok := v.(map[interface{}]interface{}); !ok {
+				message := fmt.Sprintf("invalid type for key '%s'. type was: '%v'. should have been 'map'", k, reflect.TypeOf(v))
+				return errors.New(message)
 			}
-			// req.StickySessions = ss
+			err := setValues(obj, v.(map[interface{}]interface{}))
+			if err != nil {
+				return err
+			}
+			req.HealthCheck = obj
 			continue
 		}
 
@@ -113,6 +113,18 @@ func checkRequiredFields(resource map[string]interface{}) error {
 			s := fmt.Sprintf("missing required fields: %s", v)
 			return errors.New(s)
 		}
+	}
+	return nil
+}
+
+func setValues(obj interface{}, v map[interface{}]interface{}) error {
+	for key, value := range v {
+		ref := reflect.ValueOf(obj)
+		refVal := reflect.Indirect(ref).FieldByName(key.(string))
+		if refVal == reflect.ValueOf(nil) {
+			return errors.New("field not found: " + key.(string))
+		}
+		refVal.Set(reflect.ValueOf(value))
 	}
 	return nil
 }

@@ -104,3 +104,38 @@ Resources:
 		t.Fatalf("expected healthcheck didn't match actual. actual: %+v", lb.Request.HealthCheck)
 	}
 }
+
+func TestLoadBalancerInvalidTypeForValue(t *testing.T) {
+	template := []byte(`
+Parameters:
+  StackName:
+    Description: The name of the stack to deploy
+    Type: String
+    Default: FurnaceStack
+  Port:
+    Description: Test port
+    Type: Number
+    Default: 80
+
+Resources:
+  LoadBalancer:
+    Name: TestBalancer
+    Algorithm: random
+    Region: nyc3
+    Tag: BalancerTest
+    RedirectHttpToHttps: true
+    HealthCheck: asdf
+    Type: LoadBalancer
+    DropletIDs:
+      - MyDroplet1
+      - MyDroplet2`)
+	response, err := parseTemplate(template)
+	if err != nil {
+		t.Fatal("failed with error: ", err)
+	}
+	lb := LoadBalancer{}
+	err = lb.buildRequest("TestStack", response.Resources["LoadBalancer"])
+	if err == nil {
+		t.Fatal("expected error to be not nil")
+	}
+}
