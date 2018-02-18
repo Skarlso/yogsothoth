@@ -58,22 +58,30 @@ func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]inter
 			continue
 		}
 
-		if k == "HealthCheck" {
-			hck := &godo.HealthCheck{}
+		if k == "StickySessions" || k == "HealthCheck" {
+			var obj interface{}
+			if k == "StickySessions" {
+				obj = &godo.StickySessions{}
+			} else {
+				obj = &godo.HealthCheck{}
+			}
+			// ss := &godo.StickySessions{}
+			// TODO introduce type assertion check here to prevent errors
 			for key, value := range v.(map[interface{}]interface{}) {
-				ref := reflect.ValueOf(hck)
+				ref := reflect.ValueOf(obj)
 				refVal := reflect.Indirect(ref).FieldByName(key.(string))
 				if refVal == reflect.ValueOf(nil) {
 					return errors.New("field not found: " + key.(string))
 				}
 				refVal.Set(reflect.ValueOf(value))
 			}
-			req.HealthCheck = hck
-			continue
-		}
-
-		if k == "StickySessions" {
-
+			switch i := obj.(type) {
+			case *godo.StickySessions:
+				req.StickySessions = i
+			case *godo.HealthCheck:
+				req.HealthCheck = i
+			}
+			// req.StickySessions = ss
 			continue
 		}
 

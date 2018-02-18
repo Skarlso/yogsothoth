@@ -25,9 +25,7 @@ Resources:
     Algorithm: random
     Region: nyc3
     Tag: BalancerTest
-    StickySessions: asdf
     RedirectHttpToHttps: true
-    HealthCheck: asdf
     Type: LoadBalancer
     ForwardingRules:
       ForwardingRule1:
@@ -69,7 +67,6 @@ Resources:
     Algorithm: random
     Region: nyc3
     Tag: BalancerTest
-    StickySessions: asdf
     RedirectHttpToHttps: true
     HealthCheck:
       Protocol: proto
