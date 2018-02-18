@@ -387,7 +387,7 @@ func TestCreateStackWithDomain(t *testing.T) {
 	for _, v := range response.Resources {
 		if d, ok := v.(*Domain); ok {
 			if d.Request.IPAddress != "127.0.0.1" {
-				t.Fatal("ip did not equal 127.0.0.1. was: %s", d.Request.IPAddress)
+				t.Fatalf("ip did not equal 127.0.0.1. was: %s", d.Request.IPAddress)
 			}
 			if d.Request.Name != "skarlso.io" {
 				t.Fatal("name did not equal skarlso.io. was: ", d.Request.Name)
