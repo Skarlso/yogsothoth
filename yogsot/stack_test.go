@@ -347,3 +347,67 @@ func TestCreateStackLoadBalancer(t *testing.T) {
 		}
 	}
 }
+
+func TestCreateStackWithDomain(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/domains", func(w http.ResponseWriter, r *http.Request) {
+		expected := map[string]interface{}{
+			"name":       "skarlso.io",
+			"ip_address": "127.0.0.1",
+		}
+
+		var v map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			t.Fatalf("decode json: %v", err)
+		}
+
+		if !reflect.DeepEqual(v, expected) {
+			t.Errorf("Request body\n got=%#v\nwant=%#v", v, expected)
+		}
+
+		fmt.Fprint(w, `{"domain":{"name":"skarlso.io"}}`)
+	})
+
+	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackWithDomain.yaml")
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
+	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
+	yogClient := newTestClient()
+	response, err := yogClient.CreateStack(request)
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
+	if len(response.Resources) < 1 {
+		t.Fatal("should have contained one created resource")
+	}
+	for _, v := range response.Resources {
+		if d, ok := v.(*Domain); ok {
+			if d.Request.IPAddress != "127.0.0.1" {
+				t.Fatal("ip did not equal 127.0.0.1. was: %s", d.Request.IPAddress)
+			}
+			if d.Request.Name != "skarlso.io" {
+				t.Fatal("name did not equal skarlso.io. was: ", d.Request.Name)
+			}
+		}
+	}
+}
+
+func TestCreateStackNoType(t *testing.T) {
+	setup()
+	defer teardown()
+
+	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackNoType.yaml")
+	if err != nil {
+		t.Fatal("unexpected error: " + err.Error())
+	}
+	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
+	yogClient := newTestClient()
+	_, err = yogClient.CreateStack(request)
+	if err == nil {
+		t.Fatal("should have failed with no Type for fields.")
+	}
+}

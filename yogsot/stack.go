@@ -40,8 +40,12 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 
 	response := CreateStackResponse{Name: request.StackName, Error: nil}
 	builtResources := []interface{}{}
-	for _, v := range csi.Resources {
+	for k, v := range csi.Resources {
 		var s Service
+		if _, ok := v["Type"]; !ok {
+			message := fmt.Sprintf("no 'Type' provided for resource '%s'", k)
+			return CreateStackResponse{}, errors.New(message)
+		}
 		d, err := buildResource(s.Service(v["Type"].(string)))
 		// Droplet doesn't yet have an ID. This will be updated once they are created.
 		if err != nil {

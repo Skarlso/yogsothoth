@@ -14,8 +14,8 @@ const (
 	IMAGE
 	// LOADBALANCER distribute traffic across multiple droplet
 	LOADBALANCER
-	// DOMAINRECORD is names purchased from a domain name registrar
-	DOMAINRECORD
+	// DOMAIN is names purchased from a domain name registrar
+	DOMAIN
 )
 
 func (s Service) String() string {
@@ -30,8 +30,8 @@ func (s Service) String() string {
 		return "Image"
 	case LOADBALANCER:
 		return "Load Balancer"
-	case DOMAINRECORD:
-		return "Domain Record"
+	case DOMAIN:
+		return "Domain"
 	default:
 		return "Unkown Type"
 	}
@@ -50,8 +50,8 @@ func (s Service) Service(T string) Service {
 		return IMAGE
 	case "LoadBalancer":
 		return LOADBALANCER
-	case "DomainRecord":
-		return DOMAINRECORD
+	case "Domain":
+		return DOMAIN
 	default:
 		return 999
 	}
