@@ -1,0 +1,26 @@
+Parameters:
+  StackName:
+    Description: The name of the stack to deploy
+    Type: String
+    Default: FurnaceStack
+  Port:
+    Description: Test port
+    Type: Number
+    Default: 80
+
+Resources:
+  LoadBalancer:
+    Name: TestBalancer
+    Algorithm: random
+    Region: nyc3
+    Tag: BalancerTest
+    RedirectHttpToHttps: true
+    Type: LoadBalancer
+    ForwardingRules:
+      ForwardingRule1:
+        EntryProtocol: garbage
+      ForwardingRule2:
+        EntryPort: 1234
+    DropletIDs:
+      - MyDroplet1
+      - MyDroplet2

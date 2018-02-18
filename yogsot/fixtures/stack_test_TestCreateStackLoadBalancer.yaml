@@ -23,6 +23,28 @@ Resources:
   LoadBalancer:
     Name: MyAwesomeBalancer
     Type: LoadBalancer
+    Algorithm: round_robin
+    Region: nyc1
+    ForwardingRules:
+      Rule1:
+        EntryProtocol: https
+        EntryPort: 443
+        TargetProtocol: http
+        TargetPort: 80
+        CertificateID: a-b-c
+    HealthCheck:
+      Protocol: http
+      Port: 80
+      Path: /health.html
+      CheckIntervalSeconds: 10
+      ResponseTimeoutSeconds: 5
+      UnhealthyThreshold: 3
+      HealthyThreshold: 5
+    StickySessions:
+      Type: cookie
+      CookieName: do-lb
+      CookieTtlSeconds: 5
     DropletIDs:
       - MyDroplet
       - 12
+    RedirectHttpToHttps: true

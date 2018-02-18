@@ -102,21 +102,12 @@ func (lb *LoadBalancer) buildRequest(stackname string, resource map[string]inter
 		val.Set(reflect.ValueOf(v))
 	}
 	lb.Request = req
+	lb.Request.Tag = stackname
 	return nil
 }
 
 func (lb *LoadBalancer) addDropletIDs(IDs []int) {
 	lb.Request.DropletIDs = append(lb.Request.DropletIDs, IDs...)
-}
-
-func checkRequiredFields(resource map[string]interface{}) error {
-	for _, v := range requiredFields {
-		if _, ok := resource[v]; !ok {
-			s := fmt.Sprintf("missing required fields: %s", v)
-			return errors.New(s)
-		}
-	}
-	return nil
 }
 
 func setValues(obj interface{}, v map[interface{}]interface{}) error {

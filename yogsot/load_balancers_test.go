@@ -1,6 +1,7 @@
 package yogsot
 
 import (
+	"io/ioutil"
 	"reflect"
 	"testing"
 
@@ -8,33 +9,10 @@ import (
 )
 
 func TestLoadBalancerForwardingRules(t *testing.T) {
-	template := []byte(`
-Parameters:
-  StackName:
-    Description: The name of the stack to deploy
-    Type: String
-    Default: FurnaceStack
-  Port:
-    Description: Test port
-    Type: Number
-    Default: 80
-
-Resources:
-  LoadBalancer:
-    Name: TestBalancer
-    Algorithm: random
-    Region: nyc3
-    Tag: BalancerTest
-    RedirectHttpToHttps: true
-    Type: LoadBalancer
-    ForwardingRules:
-      ForwardingRule1:
-        EntryProtocol: garbage
-      ForwardingRule2:
-        EntryPort: 1234
-    DropletIDs:
-      - MyDroplet1
-      - MyDroplet2`)
+	template, err := ioutil.ReadFile("./fixtures/load_test_TestLoadBalancerForwardingRules.yaml")
+	if err != nil {
+		t.Fatal("unexpected error while opening fixture: ", err)
+	}
 	response, err := parseTemplate(template)
 	if err != nil {
 		t.Fatal("failed with error: ", err)
@@ -50,36 +28,10 @@ Resources:
 }
 
 func TestLoadBalancerHealthChk(t *testing.T) {
-	template := []byte(`
-Parameters:
-  StackName:
-    Description: The name of the stack to deploy
-    Type: String
-    Default: FurnaceStack
-  Port:
-    Description: Test port
-    Type: Number
-    Default: 80
-
-Resources:
-  LoadBalancer:
-    Name: TestBalancer
-    Algorithm: random
-    Region: nyc3
-    Tag: BalancerTest
-    RedirectHttpToHttps: true
-    HealthCheck:
-      Protocol: proto
-      Port: 1234
-      Path: /health
-      CheckIntervalSeconds: 15
-      ResponseTimeoutSeconds: 150
-      HealthyThreshold: 2
-      UnhealthyThreshold: 4
-    Type: LoadBalancer
-    DropletIDs:
-      - MyDroplet1
-      - MyDroplet2`)
+	template, err := ioutil.ReadFile("./fixtures/load_test_TestLoadBalancerHealthChk.yaml")
+	if err != nil {
+		t.Fatal("unexpected error while opening fixture: ", err)
+	}
 	response, err := parseTemplate(template)
 	if err != nil {
 		t.Fatal("failed with error: ", err)
@@ -106,29 +58,10 @@ Resources:
 }
 
 func TestLoadBalancerInvalidTypeForValue(t *testing.T) {
-	template := []byte(`
-Parameters:
-  StackName:
-    Description: The name of the stack to deploy
-    Type: String
-    Default: FurnaceStack
-  Port:
-    Description: Test port
-    Type: Number
-    Default: 80
-
-Resources:
-  LoadBalancer:
-    Name: TestBalancer
-    Algorithm: random
-    Region: nyc3
-    Tag: BalancerTest
-    RedirectHttpToHttps: true
-    HealthCheck: asdf
-    Type: LoadBalancer
-    DropletIDs:
-      - MyDroplet1
-      - MyDroplet2`)
+	template, err := ioutil.ReadFile("./fixtures/load_test_TestLoadBalancerInvalidTypeForValue.yaml")
+	if err != nil {
+		t.Fatal("unexpected error while opening fixture: ", err)
+	}
 	response, err := parseTemplate(template)
 	if err != nil {
 		t.Fatal("failed with error: ", err)
