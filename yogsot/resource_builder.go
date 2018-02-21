@@ -12,6 +12,8 @@ func buildResource(T Service) (Resource, error) {
 		return new(LoadBalancer), nil
 	case DOMAIN:
 		return new(Domain), nil
+	case FIREWALL:
+		return new(Firewall), nil
 	default:
 		return nil, errors.New("unknown resource type: " + T.String())
 	}

@@ -1,0 +1,47 @@
+Parameters:
+  StackName:
+    Description: The name of the stack to deploy
+    Type: String
+    Default: FurnaceStack
+  Port:
+    Description: Test port
+    Type: Number
+    Default: 80
+
+Resources:
+  FireWall:
+    Name: MyFirewall
+    InboundRules:
+      Inbound1:
+        Protocol: ProtocolValue
+        PortRange: 2345:2345
+        Sources:
+          Addresses:
+            - skarlso.io
+            - nagios.skarlso.io
+          Tags:
+            - Multiple
+            - Tags
+          DropletIDs:
+            - 1234
+            - MyDroplet
+          LoadBalancerUIDs:
+            - UID1
+            - UID2
+    OutboundRules:
+      OutBound1:
+        Protocol: ProtocolValue2
+        PortRange: 1234:2345
+        Sources:
+          Addresses:
+            - skarlso.io
+            - nagios.skarlso.io
+          Tags:
+            - Outbound
+            - Tags
+          DropletIDs:
+            - 4321
+            - NotMyDroplet
+          LoadBalancerUIDs:
+            - UID3
+            - UID4
