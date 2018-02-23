@@ -6,14 +6,18 @@ import (
 
 // Firewall is a struct for firewall creation requests.
 type Firewall struct {
-	Response     *godo.Response
-	Firewall     *godo.Firewall
-	Request      *godo.FirewallRequest
-	DropletNames []string
+	Response             *godo.Response
+	Firewall             *godo.Firewall
+	Request              *godo.FirewallRequest
+	DropletNames         []string
+	InboundDropletNames  map[string][]string
+	OutboundDropletNames map[string][]string
 }
 
 func (fw *Firewall) buildRequest(stackname string, resource map[string]interface{}) error {
 	fw.DropletNames = make([]string, 0)
+	fw.InboundDropletNames = make(map[string][]string, 0)
+	fw.OutboundDropletNames = make(map[string][]string, 0)
 	req := &godo.FirewallRequest{}
 	for k, v := range resource {
 		if k == "Type" {
@@ -25,42 +29,18 @@ func (fw *Firewall) buildRequest(stackname string, resource map[string]interface
 			req.Name = v.(string)
 		case "InboundRules":
 			inboundRules := []godo.InboundRule{}
-			for _, value := range v.(map[interface{}]interface{}) {
-				iRule := &godo.InboundRule{}
-				for key, innerV := range value.(map[interface{}]interface{}) {
-					if key == "Protocol" {
-						iRule.Protocol = innerV.(string)
-					}
-					if key == "PortRange" {
-						iRule.PortRange = innerV.(string)
-					}
-					if key == "Sources" {
-						var dropletNames []string
-						dropletNames, iRule.Sources = getSources(innerV.(map[interface{}]interface{}))
-						fw.DropletNames = append(fw.DropletNames, dropletNames...)
-					}
-				}
-				inboundRules = append(inboundRules, *iRule)
+			for inKey, value := range v.(map[interface{}]interface{}) {
+				iRule, dropletNames := getIRule(value.(map[interface{}]interface{}))
+				fw.InboundDropletNames[inKey.(string)] = dropletNames
+				inboundRules = append(inboundRules, iRule)
 			}
 			req.InboundRules = inboundRules
 		case "OutboundRules":
 			outboundRules := []godo.OutboundRule{}
-			for _, value := range v.(map[interface{}]interface{}) {
-				oRule := &godo.OutboundRule{}
-				for key, innerV := range value.(map[interface{}]interface{}) {
-					if key == "Protocol" {
-						oRule.Protocol = innerV.(string)
-					}
-					if key == "PortRange" {
-						oRule.PortRange = innerV.(string)
-					}
-					if key == "Sources" {
-						var dropletNames []string
-						dropletNames, oRule.Destinations = getDestinations(innerV.(map[interface{}]interface{}))
-						fw.DropletNames = append(fw.DropletNames, dropletNames...)
-					}
-				}
-				outboundRules = append(outboundRules, *oRule)
+			for outKey, value := range v.(map[interface{}]interface{}) {
+				oRule, dropletNames := getORule(value.(map[interface{}]interface{}))
+				fw.OutboundDropletNames[outKey.(string)] = dropletNames
+				outboundRules = append(outboundRules, oRule)
 			}
 			req.OutboundRules = outboundRules
 		case "Tags":
@@ -88,6 +68,46 @@ func (fw *Firewall) build(yogClient *YogClient) error {
 	fw.Response = response
 	fw.Firewall = firewall
 	return nil
+}
+
+func (fw *Firewall) setFirewallDropletIDs(ids []int) {
+	fw.Request.DropletIDs = append(fw.Request.DropletIDs, ids...)
+}
+
+func (fw *Firewall) setInboundDropletIDs(ids []int) {
+}
+
+func (fw *Firewall) setOutboundDropletIDs(ids []int) {
+}
+
+func getIRule(v map[interface{}]interface{}) (iRule godo.InboundRule, dropletNames []string) {
+	for key, innerV := range v {
+		if key == "Protocol" {
+			iRule.Protocol = innerV.(string)
+		}
+		if key == "PortRange" {
+			iRule.PortRange = innerV.(string)
+		}
+		if key == "Sources" {
+			dropletNames, iRule.Sources = getSources(innerV.(map[interface{}]interface{}))
+		}
+	}
+	return
+}
+
+func getORule(v map[interface{}]interface{}) (oRule godo.OutboundRule, dropletNames []string) {
+	for key, innerV := range v {
+		if key == "Protocol" {
+			oRule.Protocol = innerV.(string)
+		}
+		if key == "PortRange" {
+			oRule.PortRange = innerV.(string)
+		}
+		if key == "Sources" {
+			dropletNames, oRule.Destinations = getDestinations(innerV.(map[interface{}]interface{}))
+		}
+	}
+	return
 }
 
 // TODO: Find a way to remove this duplication and tiet coupling to the

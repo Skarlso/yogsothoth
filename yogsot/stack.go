@@ -121,6 +121,17 @@ func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
 				ids = append(ids, droplets.GetID(v))
 			}
 			i.addDropletIDs(ids)
+		case *Firewall:
+			var fids []int
+			// var outIds []int
+			// var inIds []int
+			for _, v := range i.DropletNames {
+				fids = append(fids, droplets.GetID(v))
+			}
+			i.setFirewallDropletIDs(fids)
+			// for _, rule := range i.Request.InboundRules {
+			// 	for _, names := range rule.Sources
+			// }
 		case *Droplet:
 		default:
 			s := fmt.Sprintf("unknown type %v", i)

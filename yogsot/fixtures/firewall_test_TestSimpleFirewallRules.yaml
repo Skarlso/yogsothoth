@@ -29,7 +29,7 @@ Resources:
             - UID1
             - UID2
     OutboundRules:
-      OutBound1:
+      Outbound1:
         Protocol: ProtocolValue2
         PortRange: 1234:2345
         Sources:
@@ -45,3 +45,6 @@ Resources:
           LoadBalancerUIDs:
             - UID3
             - UID4
+    DropletIDs:
+      - FwDroplet
+      - 12

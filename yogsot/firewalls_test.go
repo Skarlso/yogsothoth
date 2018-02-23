@@ -48,8 +48,18 @@ func TestSimpleFirewallRules(t *testing.T) {
 	if !reflect.DeepEqual(fw.Request.OutboundRules[0], expectedOutbound) {
 		t.Fatalf("Expected %+v did not equal actual %+v", expectedOutbound, fw.Request.OutboundRules[0])
 	}
-	expectedDropletNames := []string{"MyDroplet", "NotMyDroplet"}
+	expectedDropletNames := []string{"FwDroplet"}
 	if !reflect.DeepEqual(fw.DropletNames, expectedDropletNames) {
 		t.Fatalf("Expected %+v did not equal actual %+v", fw.DropletNames, expectedDropletNames)
+	}
+	expectedInboundDropletNames := make(map[string][]string, 0)
+	expectedInboundDropletNames["Inbound1"] = []string{"MyDroplet"}
+	expectedOutboundDropletNames := make(map[string][]string, 0)
+	expectedOutboundDropletNames["Outbound1"] = []string{"NotMyDroplet"}
+	if !reflect.DeepEqual(fw.InboundDropletNames, expectedInboundDropletNames) {
+		t.Fatalf("Expected %+v did not equal actual %+v", fw.InboundDropletNames, expectedInboundDropletNames)
+	}
+	if !reflect.DeepEqual(fw.OutboundDropletNames, expectedOutboundDropletNames) {
+		t.Fatalf("Expected %+v did not equal actual %+v", fw.OutboundDropletNames, expectedOutboundDropletNames)
 	}
 }
