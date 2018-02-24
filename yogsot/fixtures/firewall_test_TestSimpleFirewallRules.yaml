@@ -32,7 +32,7 @@ Resources:
       Outbound1:
         Protocol: ProtocolValue2
         PortRange: 1234:2345
-        Sources:
+        Destinations:
           Addresses:
             - skarlso.io
             - nagios.skarlso.io
