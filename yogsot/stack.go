@@ -35,7 +35,7 @@ func (d *Droplets) GetID(droplet string) int {
 func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse, error) {
 	csi, err := parseTemplate(request.TemplateBody)
 	if err != nil {
-		return CreateStackResponse{}, errors.New("error while parsing tempalte: " + err.Error())
+		return CreateStackResponse{}, errors.New("error while parsing template: " + err.Error())
 	}
 
 	response := CreateStackResponse{Name: request.StackName, Error: nil}

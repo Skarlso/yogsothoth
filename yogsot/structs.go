@@ -33,7 +33,7 @@ func (s Service) String() string {
 	case DOMAIN:
 		return "Domain"
 	default:
-		return "Unkown Type"
+		return "Unknown Type"
 	}
 }
 
