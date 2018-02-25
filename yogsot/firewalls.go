@@ -6,12 +6,14 @@ import (
 
 // Firewall is a struct for firewall creation requests.
 type Firewall struct {
-	Response             *godo.Response
-	Firewall             *godo.Firewall
-	Request              *godo.FirewallRequest
-	DropletNames         []string
-	InboundDropletNames  map[string][]string
-	OutboundDropletNames map[string][]string
+	Response                *godo.Response
+	Firewall                *godo.Firewall
+	Request                 *godo.FirewallRequest
+	DropletNames            []string
+	InboundDropletNames     map[string][]string
+	OutboundDropletNames    map[string][]string
+	InboundRequestsForName  map[string]*godo.InboundRule
+	OutboundRequestsForName map[string]*godo.OutboundRule
 }
 
 // Rule is an in-outboundrule struct wrapper for ease of use
@@ -26,7 +28,9 @@ func (fw *Firewall) buildRequest(stackname string, resource map[string]interface
 	fw.DropletNames = make([]string, 0)
 	fw.InboundDropletNames = make(map[string][]string, 0)
 	fw.OutboundDropletNames = make(map[string][]string, 0)
-	req := &godo.FirewallRequest{}
+	fw.InboundRequestsForName = make(map[string]*godo.InboundRule, 0)
+	fw.OutboundRequestsForName = make(map[string]*godo.OutboundRule, 0)
+	req := new(godo.FirewallRequest)
 	for k, v := range resource {
 		if k == "Type" {
 			continue
@@ -40,6 +44,7 @@ func (fw *Firewall) buildRequest(stackname string, resource map[string]interface
 				rule := new(Rule)
 				rule.generateInbound(value.(map[interface{}]interface{}))
 				fw.InboundDropletNames[inKey.(string)] = rule.DropletNames
+				fw.InboundRequestsForName[inKey.(string)] = rule.InboundRule
 				inboundRules = append(inboundRules, *rule.InboundRule)
 			}
 			req.InboundRules = inboundRules
@@ -49,6 +54,7 @@ func (fw *Firewall) buildRequest(stackname string, resource map[string]interface
 				rule := new(Rule)
 				rule.generateOutbound(value.(map[interface{}]interface{}))
 				fw.OutboundDropletNames[outKey.(string)] = rule.DropletNames
+				fw.OutboundRequestsForName[outKey.(string)] = rule.OutboundRule
 				outboundRules = append(outboundRules, *rule.OutboundRule)
 			}
 			req.OutboundRules = outboundRules
@@ -83,13 +89,12 @@ func (fw *Firewall) setFirewallDropletIDs(ids []int) {
 	fw.Request.DropletIDs = append(fw.Request.DropletIDs, ids...)
 }
 
-func (fw *Firewall) setInboundDropletIDs(ids []int) {
-	// for _, in := range fw.Request.InboundRules {
-
-	// }
+func (fw *Firewall) setInboundDropletIDs(inbound *godo.InboundRule, ids []int) {
+	inbound.Sources.DropletIDs = append(inbound.Sources.DropletIDs, ids...)
 }
 
-func (fw *Firewall) setOutboundDropletIDs(ids []int) {
+func (fw *Firewall) setOutboundDropletIDs(outbound *godo.OutboundRule, ids []int) {
+	outbound.Destinations.DropletIDs = append(outbound.Destinations.DropletIDs, ids...)
 }
 
 func (r *Rule) generateInbound(v map[interface{}]interface{}) {

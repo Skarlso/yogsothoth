@@ -10,7 +10,7 @@ import (
 // Droplets are maps of droplets with corresponding ids
 type Droplets struct {
 	droplets map[string]int
-	sync.Mutex
+	sync.RWMutex
 }
 
 var droplets = Droplets{
@@ -26,8 +26,8 @@ func (d *Droplets) AddDroplet(droplet string, id int) {
 
 // GetID locks and returns the ID of a droplet
 func (d *Droplets) GetID(droplet string) int {
-	d.Lock()
-	defer d.Unlock()
+	d.RLock()
+	defer d.RUnlock()
 	return d.droplets[droplet]
 }
 
@@ -123,15 +123,25 @@ func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
 			i.addDropletIDs(ids)
 		case *Firewall:
 			var fids []int
-			// var outIds []int
-			// var inIds []int
 			for _, v := range i.DropletNames {
 				fids = append(fids, droplets.GetID(v))
 			}
 			i.setFirewallDropletIDs(fids)
-			// for _, rule := range i.Request.InboundRules {
-			// 	for _, names := range rule.Sources
-			// }
+			for inboundName, names := range i.InboundDropletNames {
+				var inIds []int
+				for _, name := range names {
+					inIds = append(inIds, droplets.GetID(name))
+				}
+				i.setInboundDropletIDs(i.InboundRequestsForName[inboundName], inIds)
+			}
+
+			for outboundName, names := range i.OutboundDropletNames {
+				var outIds []int
+				for _, name := range names {
+					outIds = append(outIds, droplets.GetID(name))
+				}
+				i.setOutboundDropletIDs(i.OutboundRequestsForName[outboundName], outIds)
+			}
 		case *Droplet:
 		default:
 			s := fmt.Sprintf("unknown type %v", i)
