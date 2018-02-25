@@ -125,67 +125,54 @@ func (r *Rule) generateOutbound(v map[interface{}]interface{}) {
 func (r *Rule) getSources(sources map[interface{}]interface{}) {
 	r.DropletNames = make([]string, 0)
 	r.InboundRule.Sources = new(godo.Sources)
-	r.InboundRule.Sources.Addresses = make([]string, 0)
-	r.InboundRule.Sources.Tags = make([]string, 0)
-	r.InboundRule.Sources.DropletIDs = make([]int, 0)
-	r.InboundRule.Sources.LoadBalancerUIDs = make([]string, 0)
-	for k, v := range sources {
-		switch k {
-		case "Addresses":
-			for _, value := range v.([]interface{}) {
-				r.InboundRule.Sources.Addresses = append(r.InboundRule.Sources.Addresses, value.(string))
-			}
-		case "Tags":
-			for _, value := range v.([]interface{}) {
-				r.InboundRule.Sources.Tags = append(r.InboundRule.Sources.Tags, value.(string))
-			}
-		case "DropletIDs":
-			for _, value := range v.([]interface{}) {
-				switch o := value.(type) {
-				case string:
-					r.DropletNames = append(r.DropletNames, o)
-				case int:
-					r.InboundRule.Sources.DropletIDs = append(r.InboundRule.Sources.DropletIDs, o)
-				}
-			}
-		case "LoadBalancerUIDs":
-			for _, value := range v.([]interface{}) {
-				r.InboundRule.Sources.LoadBalancerUIDs = append(r.InboundRule.Sources.LoadBalancerUIDs, value.(string))
-			}
-		}
-	}
+	r.InboundRule.Sources.Addresses,
+		r.InboundRule.Sources.Tags,
+		r.InboundRule.Sources.DropletIDs,
+		r.InboundRule.Sources.LoadBalancerUIDs,
+		r.DropletNames = generateSources(sources)
 }
 
 func (r *Rule) getDestinations(destinations map[interface{}]interface{}) {
 	r.DropletNames = make([]string, 0)
 	r.OutboundRule.Destinations = new(godo.Destinations)
-	r.OutboundRule.Destinations.Addresses = make([]string, 0)
-	r.OutboundRule.Destinations.Tags = make([]string, 0)
-	r.OutboundRule.Destinations.DropletIDs = make([]int, 0)
-	r.OutboundRule.Destinations.LoadBalancerUIDs = make([]string, 0)
-	for k, v := range destinations {
+	r.OutboundRule.Destinations.Addresses,
+		r.OutboundRule.Destinations.Tags,
+		r.OutboundRule.Destinations.DropletIDs,
+		r.OutboundRule.Destinations.LoadBalancerUIDs,
+		r.DropletNames = generateSources(destinations)
+}
+
+func generateSources(data map[interface{}]interface{}) (
+	addresses []string,
+	tags []string,
+	ids []int,
+	uids []string,
+	dropletNames []string) {
+
+	for k, v := range data {
 		switch k {
 		case "Addresses":
 			for _, value := range v.([]interface{}) {
-				r.OutboundRule.Destinations.Addresses = append(r.OutboundRule.Destinations.Addresses, value.(string))
+				addresses = append(addresses, value.(string))
 			}
 		case "Tags":
 			for _, value := range v.([]interface{}) {
-				r.OutboundRule.Destinations.Tags = append(r.OutboundRule.Destinations.Tags, value.(string))
+				tags = append(tags, value.(string))
 			}
 		case "DropletIDs":
 			for _, value := range v.([]interface{}) {
 				switch o := value.(type) {
 				case string:
-					r.DropletNames = append(r.DropletNames, o)
+					dropletNames = append(dropletNames, o)
 				case int:
-					r.OutboundRule.Destinations.DropletIDs = append(r.OutboundRule.Destinations.DropletIDs, o)
+					ids = append(ids, o)
 				}
 			}
 		case "LoadBalancerUIDs":
 			for _, value := range v.([]interface{}) {
-				r.OutboundRule.Destinations.LoadBalancerUIDs = append(r.OutboundRule.Destinations.LoadBalancerUIDs, value.(string))
+				uids = append(uids, value.(string))
 			}
 		}
 	}
+	return
 }
