@@ -1,0 +1,56 @@
+Parameters:
+  StackName:
+    Description: The name of the stack to deploy
+    Type: String
+    Default: FurnaceStack
+  Port:
+    Description: Test port
+    Type: Number
+    Default: 80
+
+Resources:
+  Droplet1:
+    Name: MyDroplet
+    Type: Droplet
+  FireWall:
+    Name: f-i-r-e-w-a-l-l
+    Type: Firewall
+    InboundRules:
+      Inbound1:
+        Protocol: icmp
+        Sources:
+          Addresses:
+            - 0.0.0.0/0
+          Tags:
+            - frontend
+          DropletIDs:
+            - 123
+            - 456
+            - MyDroplet
+          LoadBalancerUIDs:
+            - lb-uid
+      Inbound2:
+        Protocol: tcp
+        PortRange: 8000-9000
+        Sources:
+          Addresses:
+            - 0.0.0.0/0
+    OutboundRules:
+      Outbound1:
+        Protocol: icmp
+        Destinations:
+          Tags:
+            - frontend
+      Outbound2:
+        Protocol: tcp
+        PortRange: 8000-9000
+        Destinations:
+          Addresses:
+            - ::/1
+          DropletIDs:
+            - MyDroplet
+    DropletIDs:
+      - 123
+      - MyDroplet
+    Tags:
+      - frontend

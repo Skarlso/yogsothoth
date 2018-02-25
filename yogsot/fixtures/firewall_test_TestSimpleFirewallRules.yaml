@@ -11,6 +11,7 @@ Parameters:
 Resources:
   FireWall:
     Name: MyFirewall
+    Type: Firewall
     InboundRules:
       Inbound1:
         Protocol: ProtocolValue

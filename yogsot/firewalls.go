@@ -59,6 +59,11 @@ func (fw *Firewall) buildRequest(stackname string, resource map[string]interface
 			}
 			req.OutboundRules = outboundRules
 		case "Tags":
+			tags := make([]string, 0)
+			for _, tag := range v.([]interface{}) {
+				tags = append(tags, tag.(string))
+			}
+			req.Tags = tags
 		case "DropletIDs":
 			for _, value := range v.([]interface{}) {
 				switch o := value.(type) {
