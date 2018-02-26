@@ -7,7 +7,7 @@
 
 Is a library providing the ability to handle Digital Ocean assets together.
 
-For an example, please see [Furnace](https://github.com/Skarlso/go-furnace). More precisely under `furnace-do`.
+For an example, please see [Furnace](https://github.com/Skarlso/go-furnace) under `furnace-do`.
 
 Example yaml description file:
 
