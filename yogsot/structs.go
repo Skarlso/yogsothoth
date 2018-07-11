@@ -91,6 +91,27 @@ type DescribeStackRequest struct {
 type DescribeStackResponse struct {
 }
 
+// DropletError is an error that contains information about
+// droplet launch faiulre such as, the name of the droplet
+// and the failure reason.
+type DropletError struct {
+	DropletName string
+	Error       error
+	Message     string
+}
+
+// YogError is an error which accumulates multiple errors
+// with different contexts. Like droplet start errors or
+// errors with parsing yaml containing as much information
+// as possible.
+type YogError struct {
+	Code          int
+	Stackname     string
+	DropletErrors []DropletError
+	Error         error
+	Message       string
+}
+
 // Parameter are the variables of the stack.
 type Parameter struct {
 	Default     string `yaml:"Default"`

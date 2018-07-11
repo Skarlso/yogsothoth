@@ -85,9 +85,9 @@ func TestCreateStack(t *testing.T) {
 	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
-	response, err := yogClient.CreateStack(request)
-	if err != nil {
-		t.Fatal("unexpected error: " + err.Error())
+	response, ye := yogClient.CreateStack(request)
+	if ye.Error != nil {
+		t.Fatal("unexpected error: " + ye.Error.Error())
 	}
 	if len(response.Resources) < 1 {
 		t.Fatal("should have contained one created resource")
@@ -133,9 +133,9 @@ func TestCreateStackMoreThanFiveDroplets(t *testing.T) {
 	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
-	response, err := yogClient.CreateStack(request)
-	if err != nil {
-		t.Fatal("unexpected error: " + err.Error())
+	response, ye := yogClient.CreateStack(request)
+	if ye.Error != nil {
+		t.Fatal("unexpected error: " + ye.Error.Error())
 	}
 	if len(response.Resources) < 1 {
 		t.Fatal("should have contained one created resource")
@@ -198,9 +198,9 @@ func TestCreateStackMultipleResources(t *testing.T) {
 	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
-	response, err := yogClient.CreateStack(request)
-	if err != nil {
-		t.Fatal("unexpected error: " + err.Error())
+	response, ye := yogClient.CreateStack(request)
+	if ye.Error != nil {
+		t.Fatal("unexpected error: " + ye.Error.Error())
 	}
 	if len(response.Resources) < 1 {
 		t.Fatal("should have contained one created resource")
@@ -332,9 +332,9 @@ func TestCreateStackLoadBalancer(t *testing.T) {
 	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
-	response, err := yogClient.CreateStack(request)
-	if err != nil {
-		t.Fatal("unexpected error: " + err.Error())
+	response, ye := yogClient.CreateStack(request)
+	if ye.Error != nil {
+		t.Fatal("unexpected error: " + ye.Error.Error())
 	}
 	if len(response.Resources) < 1 {
 		t.Fatal("should have contained one created resource")
@@ -377,9 +377,9 @@ func TestCreateStackWithDomain(t *testing.T) {
 	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
-	response, err := yogClient.CreateStack(request)
-	if err != nil {
-		t.Fatal("unexpected error: " + err.Error())
+	response, ye := yogClient.CreateStack(request)
+	if ye.Error != nil {
+		t.Fatal("unexpected error: " + ye.Error.Error())
 	}
 	if len(response.Resources) < 1 {
 		t.Fatal("should have contained one created resource")
@@ -406,8 +406,8 @@ func TestCreateStackNoType(t *testing.T) {
 	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
-	_, err = yogClient.CreateStack(request)
-	if err == nil {
+	_, ye := yogClient.CreateStack(request)
+	if ye.Error == nil {
 		t.Fatal("should have failed with no Type for fields.")
 	}
 }
@@ -578,9 +578,9 @@ func TestCreateFirewall(t *testing.T) {
 	}
 	request := CreateStackRequest{TemplateBody: template, StackName: "TestStack"}
 	yogClient := newTestClient()
-	response, err := yogClient.CreateStack(request)
-	if err != nil {
-		t.Fatal("unexpected error: " + err.Error())
+	response, ye := yogClient.CreateStack(request)
+	if ye.Error != nil {
+		t.Fatal("unexpected error: " + ye.Error.Error())
 	}
 	if len(response.Resources) < 1 {
 		t.Fatal("should have contained one created resource")
