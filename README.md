@@ -95,3 +95,7 @@ Resources:
 ```
 
 This is currently in development. For upcoming things, please consult the [ROADMAP](./ROADMAP.md).
+
+# Contributions
+
+Are very welcome.
