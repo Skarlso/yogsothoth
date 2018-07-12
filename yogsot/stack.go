@@ -43,7 +43,7 @@ type CreateStackRequest struct {
 type CreateStackResponse struct {
 	Name      string
 	Error     error
-	Resources []interface{}
+	Resources []Resource
 }
 
 // DeleteStackRequest delete stack request.
@@ -52,6 +52,7 @@ type DeleteStackRequest struct {
 
 // DeleteStackResponse delete stack response.
 type DeleteStackResponse struct {
+	DeletedResources []Resource
 }
 
 // DescribeStackRequest describe stack request.
@@ -122,7 +123,7 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 	}
 
 	response := CreateStackResponse{Name: request.StackName, Error: nil}
-	builtResources := []interface{}{}
+	builtResources := []Resource{}
 	for k, v := range csi.Resources {
 		var s Service
 		if _, ok := v["Type"]; !ok {
@@ -201,19 +202,21 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 }
 
 // DeleteStack deletes a given stack.
-func (y *YogClient) DeleteStack(request DeleteStackRequest) (DeleteStackResponse, error) {
-	return DeleteStackResponse{}, nil
+func (y *YogClient) DeleteStack(request DeleteStackRequest) (DeleteStackResponse, YogError) {
+	ret := DeleteStackResponse{}
+
+	return ret, YogError{}
 }
 
 // DescribeStack returns information about a created stack.
-func (y *YogClient) DescribeStack(request DescribeStackRequest) (DescribeStackResponse, error) {
-	return DescribeStackResponse{}, nil
+func (y *YogClient) DescribeStack(request DescribeStackRequest) (DescribeStackResponse, YogError) {
+	return DescribeStackResponse{}, YogError{}
 }
 
 // launchAllDroplets goes through the resources and launches all the
 // droplets concurrently. It uses a semaphore to limit the number
 // of concurrent droplet launches. Currently that is hardcoded to 4.
-func (y *YogClient) launchAllDroplets(droplets []interface{}) []DropletError {
+func (y *YogClient) launchAllDroplets(droplets []Resource) []DropletError {
 	dropletErrors := make([]DropletError, 0)
 	sem := make(chan int, 4)
 	var wg sync.WaitGroup
@@ -255,7 +258,7 @@ func (y *YogClient) launchDroplet(droplet *Droplet) error {
 
 // setupDropletIDsForResources for each service there is a different way
 // to provide droplet ids to use
-func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
+func (y *YogClient) setupDropletIDsForResources(resources []Resource) error {
 	for _, v := range resources {
 		switch i := v.(type) {
 		case *FloatingIP:
@@ -297,7 +300,7 @@ func (y *YogClient) setupDropletIDsForResources(resources []interface{}) error {
 	return nil
 }
 
-func (y *YogClient) launchTheRestOfTheResources(resources []interface{}) error {
+func (y *YogClient) launchTheRestOfTheResources(resources []Resource) error {
 	for _, v := range resources {
 		if _, ok := v.(*Droplet); ok {
 			continue
