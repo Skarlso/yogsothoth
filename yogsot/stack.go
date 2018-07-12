@@ -33,6 +33,56 @@ const (
 	ErrorLaunchingResource
 )
 
+// CreateStackRequest create stack request.
+type CreateStackRequest struct {
+	TemplateBody []byte
+	StackName    string
+}
+
+// CreateStackResponse create stack response.
+type CreateStackResponse struct {
+	Name      string
+	Error     error
+	Resources []interface{}
+}
+
+// DeleteStackRequest delete stack request.
+type DeleteStackRequest struct {
+}
+
+// DeleteStackResponse delete stack response.
+type DeleteStackResponse struct {
+}
+
+// DescribeStackRequest describe stack request.
+type DescribeStackRequest struct {
+}
+
+// DescribeStackResponse describe stack response.
+type DescribeStackResponse struct {
+}
+
+// DropletError is an error that contains information about
+// droplet launch faiulre such as, the name of the droplet
+// and the failure reason.
+type DropletError struct {
+	DropletName string
+	Error       error
+	Message     string
+}
+
+// YogError is an error which accumulates multiple errors
+// with different contexts. Like droplet start errors or
+// errors with parsing yaml containing as much information
+// as possible.
+type YogError struct {
+	Code          int
+	Stackname     string
+	DropletErrors []DropletError
+	Error         error
+	Message       string
+}
+
 // Droplets are maps of droplets with corresponding ids
 type Droplets struct {
 	droplets map[string]int
