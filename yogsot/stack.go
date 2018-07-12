@@ -42,7 +42,6 @@ type CreateStackRequest struct {
 // CreateStackResponse create stack response.
 type CreateStackResponse struct {
 	Name      string
-	Error     error
 	Resources []Resource
 }
 
@@ -122,7 +121,7 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 		return CreateStackResponse{}, ye
 	}
 
-	response := CreateStackResponse{Name: request.StackName, Error: nil}
+	response := CreateStackResponse{Name: request.StackName}
 	builtResources := []Resource{}
 	for k, v := range csi.Resources {
 		var s Service
