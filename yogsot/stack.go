@@ -47,6 +47,7 @@ type CreateStackResponse struct {
 
 // DeleteStackRequest delete stack request.
 type DeleteStackRequest struct {
+	StackName string
 }
 
 // DeleteStackResponse delete stack response.
@@ -197,6 +198,7 @@ func (y *YogClient) CreateStack(request CreateStackRequest) (CreateStackResponse
 	}
 
 	response.Resources = builtResources
+	// Save resources here.
 	return response, YogError{}
 }
 
