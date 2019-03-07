@@ -9,7 +9,7 @@ import (
 )
 
 func TestLoadBalancerForwardingRules(t *testing.T) {
-	template, err := ioutil.ReadFile("./fixtures/load_test_TestLoadBalancerForwardingRules.yaml")
+	template, err := ioutil.ReadFile("./testdata/load_test_TestLoadBalancerForwardingRules.yaml")
 	if err != nil {
 		t.Fatal("unexpected error while opening fixture: ", err)
 	}
@@ -28,7 +28,7 @@ func TestLoadBalancerForwardingRules(t *testing.T) {
 }
 
 func TestLoadBalancerHealthChk(t *testing.T) {
-	template, err := ioutil.ReadFile("./fixtures/load_test_TestLoadBalancerHealthChk.yaml")
+	template, err := ioutil.ReadFile("./testdata/load_test_TestLoadBalancerHealthChk.yaml")
 	if err != nil {
 		t.Fatal("unexpected error while opening fixture: ", err)
 	}
@@ -58,7 +58,7 @@ func TestLoadBalancerHealthChk(t *testing.T) {
 }
 
 func TestLoadBalancerInvalidTypeForValue(t *testing.T) {
-	template, err := ioutil.ReadFile("./fixtures/load_test_TestLoadBalancerInvalidTypeForValue.yaml")
+	template, err := ioutil.ReadFile("./testdata/load_test_TestLoadBalancerInvalidTypeForValue.yaml")
 	if err != nil {
 		t.Fatal("unexpected error while opening fixture: ", err)
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 func TestSimpleFirewallRules(t *testing.T) {
-	template, err := ioutil.ReadFile("./fixtures/firewall_test_TestSimpleFirewallRules.yaml")
+	template, err := ioutil.ReadFile("./testdata/firewall_test_TestSimpleFirewallRules.yaml")
 	if err != nil {
 		t.Fatal("unexpected error while opening fixture: ", err)
 	}
@@ -65,7 +65,7 @@ func TestSimpleFirewallRules(t *testing.T) {
 }
 
 func TestSettingDropletIdsForIndividualRules(t *testing.T) {
-	template, err := ioutil.ReadFile("./fixtures/firewall_test_TestSimpleFirewallRules.yaml")
+	template, err := ioutil.ReadFile("./testdata/firewall_test_TestSimpleFirewallRules.yaml")
 	if err != nil {
 		t.Fatal("unexpected error while opening fixture: ", err)
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 func TestDomainCreate(t *testing.T) {
-	template, err := ioutil.ReadFile("./fixtures/domain_test_TestDomainCreate.yaml")
+	template, err := ioutil.ReadFile("./testdata/domain_test_TestDomainCreate.yaml")
 	if err != nil {
 		t.Fatal("unexpected error while opening fixture: ", err)
 	}

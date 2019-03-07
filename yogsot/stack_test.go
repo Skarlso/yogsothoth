@@ -79,7 +79,7 @@ func TestCreateStack(t *testing.T) {
 		fmt.Fprintf(w, `{"droplet":{"id":1}, "links":{"actions": [{"id": 1, "href": "http://example.com", "rel": "create"}]}}`)
 	})
 
-	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStack.yaml")
+	template, err := ioutil.ReadFile("./testdata/stack_test_TestCreateStack.yaml")
 	if err != nil {
 		t.Fatal("unexpected error: " + err.Error())
 	}
@@ -127,7 +127,7 @@ func TestCreateStackMoreThanFiveDroplets(t *testing.T) {
 
 	// Normally, the none uniqueness of these names should raise an error.
 	// But for unit testing purposes, I'm ignore those for now.
-	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackMoreThanFiveDroplets.yaml")
+	template, err := ioutil.ReadFile("./testdata/stack_test_TestCreateStackMoreThanFiveDroplets.yaml")
 	if err != nil {
 		t.Fatal("unexpected error: " + err.Error())
 	}
@@ -192,7 +192,7 @@ func TestCreateStackMultipleResources(t *testing.T) {
 		fmt.Fprint(w, `{"floating_ip":{"region":{"slug":"nyc3"},"droplet":{"id":987},"ip":"192.168.0.1"}}`)
 	})
 
-	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackMultipleResources.yaml")
+	template, err := ioutil.ReadFile("./testdata/stack_test_TestCreateStackMultipleResources.yaml")
 	if err != nil {
 		t.Fatal("unexpected error: " + err.Error())
 	}
@@ -326,7 +326,7 @@ func TestCreateStackLoadBalancer(t *testing.T) {
 		fmt.Fprintf(w, `{"droplet":{"id":987}, "links":{"actions": [{"id": 1, "href": "http://example.com", "rel": "create"}]}}`)
 	})
 
-	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackLoadBalancer.yaml")
+	template, err := ioutil.ReadFile("./testdata/stack_test_TestCreateStackLoadBalancer.yaml")
 	if err != nil {
 		t.Fatal("unexpected error: " + err.Error())
 	}
@@ -371,7 +371,7 @@ func TestCreateStackWithDomain(t *testing.T) {
 		fmt.Fprint(w, `{"domain":{"name":"skarlso.io"}}`)
 	})
 
-	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackWithDomain.yaml")
+	template, err := ioutil.ReadFile("./testdata/stack_test_TestCreateStackWithDomain.yaml")
 	if err != nil {
 		t.Fatal("unexpected error: " + err.Error())
 	}
@@ -400,7 +400,7 @@ func TestCreateStackNoType(t *testing.T) {
 	setup()
 	defer teardown()
 
-	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateStackNoType.yaml")
+	template, err := ioutil.ReadFile("./testdata/stack_test_TestCreateStackNoType.yaml")
 	if err != nil {
 		t.Fatal("unexpected error: " + err.Error())
 	}
@@ -572,7 +572,7 @@ func TestCreateFirewall(t *testing.T) {
 		fmt.Fprint(w, firewallJSONResponse)
 	})
 
-	template, err := ioutil.ReadFile("./fixtures/stack_test_TestCreateFirewall.yaml")
+	template, err := ioutil.ReadFile("./testdata/stack_test_TestCreateFirewall.yaml")
 	if err != nil {
 		t.Fatal("unexpected error: " + err.Error())
 	}
